@@ -112,6 +112,95 @@ logger = Logger(sinks=[
 ])
 ```
 
+## Project Integration (3 steps)
+
+### Step 1: Add dependency
+
+```bash
+pip install nfo
+```
+
+### Step 2: Create `nfo_config.py` in your project
+
+```python
+# myproject/nfo_config.py
+from nfo import configure
+
+_logger = None
+
+def setup_logging():
+    global _logger
+    if _logger is not None:
+        return
+    _logger = configure(
+        name="myproject",
+        sinks=["sqlite:/tmp/myproject-logs/app.db"],
+        modules=["myproject.api", "myproject.core"],  # bridge stdlib loggers
+    )
+```
+
+### Step 3: Call at entry point
+
+```python
+# myproject/main.py
+from myproject.nfo_config import setup_logging
+setup_logging()
+```
+
+Done. All `logging.getLogger(__name__)` calls in bridged modules now write to SQLite automatically.
+
+## `configure()` — One-liner Setup
+
+```python
+from nfo import configure
+
+# Zero-config (console only):
+configure()
+
+# With sinks:
+configure(sinks=["sqlite:app.db", "csv:app.csv", "md:app.md"])
+
+# Bridge existing stdlib loggers to nfo sinks:
+configure(
+    sinks=["sqlite:app.db"],
+    modules=["myapp.api", "myapp.models"],
+)
+
+# Environment variable overrides:
+#   NFO_LEVEL=WARNING
+#   NFO_SINKS=sqlite:app.db,csv:app.csv
+```
+
+## `@logged` — Class Decorator (SOLID)
+
+Auto-wraps all public methods with `@log_call`. Private methods (`_name`) are excluded.
+
+```python
+from nfo import logged, skip
+
+@logged
+class UserService:
+    def create(self, name: str) -> dict:
+        return {"name": name}
+
+    def delete(self, user_id: int) -> bool:
+        return True
+
+    @skip  # excluded from logging
+    def health_check(self) -> str:
+        return "ok"
+
+    def _internal(self):
+        pass  # private — not logged
+```
+
+With custom level:
+```python
+@logged(level="INFO")
+class PaymentService:
+    def charge(self, amount: float) -> bool: ...
+```
+
 ## What Gets Logged
 
 Each `@log_call` / `@catch` captures:
