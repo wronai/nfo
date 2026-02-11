@@ -4,15 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nfo"
-version = "0.1.12"
-description = "Automatic function logging with decorators — output to SQLite, CSV, and Markdown"
+version = "0.1.13"
+description = "Automatic function logging with decorators — output to SQLite, CSV, Markdown + LLM-powered log analysis"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.9"
 authors = [
     {name = "wronai"},
 ]
-keywords = ["logging", "decorator", "sqlite", "csv", "markdown", "auto-logging"]
+keywords = ["logging", "decorator", "sqlite", "csv", "markdown", "auto-logging", "llm", "litellm"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -27,9 +27,15 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
+llm = [
+    "litellm>=1.0",
+]
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
+]
+all = [
+    "litellm>=1.0",
 ]
 
 [tool.setuptools.packages.find]

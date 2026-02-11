@@ -9,6 +9,8 @@ from nfo.logger import Logger
 from nfo.sinks import SQLiteSink, CSVSink, MarkdownSink
 from nfo.configure import configure
 from nfo.logged import logged, skip
+from nfo.env import EnvTagger, DynamicRouter, DiffTracker
+from nfo.llm import LLMSink, detect_prompt_injection, scan_entry_for_injection
 
 __version__ = "0.1.9"
 
@@ -22,4 +24,10 @@ __all__ = [
     "SQLiteSink",
     "CSVSink",
     "MarkdownSink",
+    "LLMSink",
+    "EnvTagger",
+    "DynamicRouter",
+    "DiffTracker",
+    "detect_prompt_injection",
+    "scan_entry_for_injection",
 ]

@@ -94,6 +94,10 @@ def configure(
     bridge_stdlib: bool = False,
     propagate_stdlib: bool = True,
     env_prefix: str = "NFO_",
+    environment: Optional[str] = None,
+    version: Optional[str] = None,
+    llm_model: Optional[str] = None,
+    detect_injection: bool = False,
 ) -> Logger:
     """
     Configure nfo logging for the entire project.
@@ -109,6 +113,11 @@ def configure(
                        so ALL stdlib logging goes through nfo sinks.
         propagate_stdlib: Forward nfo decorator logs to stdlib (console).
         env_prefix: Prefix for environment variable overrides.
+        environment: Environment tag (auto-detected if None and env tagging enabled).
+        version: App version tag (auto-detected if None and env tagging enabled).
+        llm_model: litellm model for LLM-powered log analysis (e.g. "gpt-4o-mini").
+                   Wraps sinks with LLMSink. Requires: pip install nfo[llm]
+        detect_injection: Enable prompt injection detection in log args.
 
     Returns:
         Configured Logger instance.
@@ -116,6 +125,8 @@ def configure(
     Environment variables (override arguments):
         NFO_LEVEL: Override log level
         NFO_SINKS: Comma-separated sink specs (e.g. "sqlite:logs.db,csv:logs.csv")
+        NFO_ENV: Override environment tag
+        NFO_LLM_MODEL: Override LLM model
 
     Examples:
         # Zero-config (just console output):
@@ -130,6 +141,14 @@ def configure(
             sinks=["sqlite:app.db"],
             modules=["pactown.sandbox", "pactown.runner"],
         )
+
+        # Full pipeline: env tagging + LLM analysis + injection detection:
+        configure(
+            sinks=["sqlite:app.db"],
+            environment="prod",
+            llm_model="gpt-4o-mini",
+            detect_injection=True,
+        )
     """
     global _configured
 
@@ -139,6 +158,14 @@ def configure(
         level = env_level.upper()
 
     env_sinks = os.environ.get(f"{env_prefix}SINKS")
+
+    # Environment overrides for new features
+    env_env = os.environ.get(f"{env_prefix}ENV")
+    if env_env:
+        environment = env_env
+    env_llm = os.environ.get(f"{env_prefix}LLM_MODEL")
+    if env_llm:
+        llm_model = env_llm
 
     # Build sink list
     resolved_sinks: List[Sink] = []
@@ -153,6 +180,44 @@ def configure(
             spec = spec.strip()
             if spec:
                 resolved_sinks.append(_parse_sink_spec(spec))
+
+    # Wrap sinks with LLM analysis if model specified
+    if llm_model and resolved_sinks:
+        from nfo.llm import LLMSink
+        resolved_sinks = [
+            LLMSink(
+                model=llm_model,
+                delegate=sink,
+                async_mode=True,
+                detect_injection=detect_injection,
+            )
+            for sink in resolved_sinks
+        ]
+    elif detect_injection and resolved_sinks:
+        from nfo.llm import LLMSink
+        resolved_sinks = [
+            LLMSink(
+                model="",
+                delegate=sink,
+                async_mode=False,
+                detect_injection=True,
+                analyze_levels=[],
+            )
+            for sink in resolved_sinks
+        ]
+
+    # Wrap sinks with env tagging if environment or version specified
+    if (environment or version) and resolved_sinks:
+        from nfo.env import EnvTagger
+        resolved_sinks = [
+            EnvTagger(
+                sink,
+                environment=environment,
+                version=version,
+                auto_detect=True,
+            )
+            for sink in resolved_sinks
+        ]
 
     # Create logger
     logger = Logger(

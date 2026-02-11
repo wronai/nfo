@@ -1,3 +1,31 @@
+## [0.1.13] - 2026-02-11
+
+### Summary
+
+refactor(config): configuration management system
+
+### Docs
+
+- docs: update README
+
+### Test
+
+- update tests/test_env.py
+- update tests/test_llm.py
+
+### Build
+
+- update pyproject.toml
+
+### Other
+
+- update nfo/__init__.py
+- update nfo/configure.py
+- update nfo/env.py
+- update nfo/llm.py
+- update nfo/models.py
+
+
 ## [0.1.12] - 2026-02-11
 
 ### Summary

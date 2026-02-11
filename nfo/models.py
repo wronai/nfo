@@ -27,6 +27,10 @@ class LogEntry:
     exception_type: Optional[str] = None
     traceback: Optional[str] = None
     duration_ms: Optional[float] = None
+    environment: Optional[str] = None
+    trace_id: Optional[str] = None
+    version: Optional[str] = None
+    llm_analysis: Optional[str] = None
     extra: Dict[str, Any] = field(default_factory=dict)
 
     @staticmethod
@@ -50,4 +54,8 @@ class LogEntry:
             "exception_type": self.exception_type or "",
             "traceback": self.traceback or "",
             "duration_ms": self.duration_ms,
+            "environment": self.environment or "",
+            "trace_id": self.trace_id or "",
+            "version": self.version or "",
+            "llm_analysis": self.llm_analysis or "",
         }
