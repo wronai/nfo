@@ -223,13 +223,13 @@ docker compose up --build
 
 | Service | URL | Description |
 |---------|-----|-------------|
-| **nfo-demo** | http://localhost:8000 | FastAPI app with all nfo sinks |
+| **nfo-demo** | http://localhost:8088 | FastAPI app with all nfo sinks |
 | **Prometheus** | http://localhost:9091 | Scrapes nfo metrics every 5s |
 | **Grafana** | http://localhost:3000 | Pre-built dashboard (admin/admin) |
 
 Generate load to populate dashboards:
 ```bash
-python demo/load_generator.py --url http://localhost:8000 --interval 0.5
+python demo/load_generator.py --url http://localhost:8088 --interval 0.5
 ```
 
 Endpoints:

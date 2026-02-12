@@ -1,0 +1,107 @@
+# nfo example — Kubernetes deployment for centralized logging service.
+#
+# Deploy nfo-logger as a cluster-internal service accessible by all pods.
+#
+# Usage:
+#   kubectl apply -f examples/kubernetes/
+#   kubectl port-forward svc/nfo-logger 8080:8080
+#   curl http://localhost:8080/logs
+#
+# From any pod in the cluster:
+#   curl http://nfo-logger:8080/log -d '{"cmd":"deploy","args":["prod"],"language":"bash"}'
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfo-logger
+  labels:
+    app: nfo-logger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfo-logger
+  template:
+    metadata:
+      labels:
+        app: nfo-logger
+    spec:
+      containers:
+      - name: nfo
+        image: python:3.12-slim
+        command:
+        - /bin/sh
+        - -c
+        - |
+          pip install nfo fastapi uvicorn --quiet &&
+          cd /app &&
+          python -c "
+          import uvicorn
+          from examples.http_service import app
+          uvicorn.run(app, host='0.0.0.0', port=8080)
+          "
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: NFO_ENV
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: NFO_LOG_DIR
+          value: /data/logs
+        volumeMounts:
+        - name: nfo-logs
+          mountPath: /data/logs
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+      volumes:
+      - name: nfo-logs
+        persistentVolumeClaim:
+          claimName: nfo-logs-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nfo-logger
+  labels:
+    app: nfo-logger
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: nfo-logger
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfo-logs-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

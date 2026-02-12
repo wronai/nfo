@@ -13,8 +13,8 @@ services:
       dockerfile: demo/Dockerfile
     container_name: nfo-demo
     ports:
-      - "8000:8000"   # FastAPI app
-      - "9090:9090"   # prometheus_client built-in /metrics
+      - "8088:8000"   # FastAPI app (host:container)
+      - "9099:9090"   # prometheus_client built-in /metrics
     environment:
       - NFO_ENV=docker
       - NFO_VERSION=0.2.0

@@ -12,7 +12,7 @@ docker compose up --build
 
 | Service | URL | Credentials |
 |---------|-----|-------------|
-| **nfo-demo** (FastAPI) | http://localhost:8000 | — |
+| **nfo-demo** (FastAPI) | http://localhost:8088 | — |
 | **Prometheus** | http://localhost:9091 | — |
 | **Grafana** | http://localhost:3000 | admin / admin |
 
@@ -34,7 +34,7 @@ Populate dashboards with realistic traffic:
 
 ```bash
 # From repo root:
-python demo/load_generator.py --url http://localhost:8000 --interval 0.5
+python demo/load_generator.py --url http://localhost:8088 --interval 0.5
 
 # Or with limited requests:
 python demo/load_generator.py --count 100 --interval 0.2
