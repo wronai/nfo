@@ -34,6 +34,7 @@ class Logger:
         if propagate_stdlib:
             self._stdlib_logger = logging.getLogger(name)
             self._stdlib_logger.setLevel(getattr(logging, self.level, logging.DEBUG))
+            self._stdlib_logger.propagate = False
             if not self._stdlib_logger.handlers:
                 handler = logging.StreamHandler(sys.stderr)
                 handler.setFormatter(

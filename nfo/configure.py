@@ -19,6 +19,7 @@ from nfo.sinks import CSVSink, MarkdownSink, SQLiteSink, Sink
 from nfo.decorators import set_default_logger
 
 _configured = False
+_last_logger: Optional["Logger"] = None
 
 
 def _parse_sink_spec(spec: str) -> Sink:
@@ -106,6 +107,7 @@ def configure(
     version: Optional[str] = None,
     llm_model: Optional[str] = None,
     detect_injection: bool = False,
+    force: bool = False,
 ) -> Logger:
     """
     Configure nfo logging for the entire project.
@@ -158,7 +160,10 @@ def configure(
             detect_injection=True,
         )
     """
-    global _configured
+    global _configured, _last_logger
+
+    if _configured and not force and _last_logger is not None:
+        return _last_logger
 
     # Environment overrides
     env_level = os.environ.get(f"{env_prefix}LEVEL")
@@ -262,4 +267,5 @@ def configure(
                     bridged.add(mod)
 
     _configured = True
+    _last_logger = logger
     return logger

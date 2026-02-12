@@ -5,6 +5,8 @@ import logging
 import pytest
 
 from nfo import configure, log_call, logged, skip, Logger
+import sys
+import importlib
 from nfo.configure import _parse_sink_spec, _StdlibBridge
 from nfo.decorators import set_default_logger
 from nfo.models import LogEntry
@@ -51,6 +53,11 @@ class TestParseSinkSpec:
 # -- configure() -------------------------------------------------------------
 
 class TestConfigure:
+
+    def setup_method(self):
+        _mod = sys.modules["nfo.configure"]
+        _mod._configured = False
+        _mod._last_logger = None
 
     def test_returns_logger(self):
         lgr = configure(name="test-cfg", propagate_stdlib=False)
