@@ -206,7 +206,117 @@ class TestStdlibBridge:
         assert len(sink.entries) == 1
         assert sink.entries[0].level == "INFO"
         assert sink.entries[0].module == "test.bridge.module"
-        assert "hello from stdlib" in sink.entries[0].extra.get("message", "")
+        assert sink.entries[0].return_value == "hello from stdlib"
+        assert sink.entries[0].return_type == "str"
+        assert sink.entries[0].extra["message"] == "hello from stdlib"
+        assert sink.entries[0].extra["source"] == "stdlib_bridge"
+
+        stdlib_logger.removeHandler(bridge)
+        lgr.close()
+
+    def test_bridge_qualified_function_name(self):
+        sink = MemorySink()
+        lgr = Logger(name="test-bridge-qual", sinks=[sink], propagate_stdlib=False)
+
+        bridge = _StdlibBridge(lgr)
+        bridge.setLevel(logging.DEBUG)
+
+        stdlib_logger = logging.getLogger("pactown.sandbox")
+        stdlib_logger.addHandler(bridge)
+        stdlib_logger.setLevel(logging.DEBUG)
+
+        stdlib_logger.info("[my-service] Starting build")
+
+        entry = sink.entries[0]
+        assert entry.module == "pactown.sandbox"
+        # function_name should include the module prefix
+        assert "pactown.sandbox" in entry.function_name
+        assert entry.return_value == "[my-service] Starting build"
+
+        stdlib_logger.removeHandler(bridge)
+        lgr.close()
+
+    def test_bridge_multiple_loggers(self):
+        sink = MemorySink()
+        lgr = Logger(name="test-bridge-multi", sinks=[sink], propagate_stdlib=False)
+
+        bridge = _StdlibBridge(lgr)
+        bridge.setLevel(logging.DEBUG)
+
+        loggers = []
+        for name in ["pactown.sandbox", "pactown.builders", "pactown.builders.mobile"]:
+            sl = logging.getLogger(name)
+            sl.addHandler(bridge)
+            sl.setLevel(logging.DEBUG)
+            sl.propagate = False  # prevent child→parent duplication
+            loggers.append((sl, name))
+
+        loggers[0][0].info("sandbox msg")
+        loggers[1][0].warning("builder msg")
+        loggers[2][0].error("mobile msg")
+
+        assert len(sink.entries) == 3
+        assert sink.entries[0].module == "pactown.sandbox"
+        assert sink.entries[0].level == "INFO"
+        assert sink.entries[1].module == "pactown.builders"
+        assert sink.entries[1].level == "WARNING"
+        assert sink.entries[2].module == "pactown.builders.mobile"
+        assert sink.entries[2].level == "ERROR"
+
+        for sl, _ in loggers:
+            sl.removeHandler(bridge)
+        lgr.close()
+
+    def test_bridge_no_duplicate_from_child_propagation(self):
+        """When both parent and child loggers are in the bridge list,
+        only the parent gets the handler — child propagates automatically.
+        This mirrors configure()'s dedup logic."""
+        sink = MemorySink()
+        lgr = Logger(name="test-dedup", sinks=[sink], propagate_stdlib=False)
+
+        bridge = _StdlibBridge(lgr)
+        bridge.setLevel(logging.DEBUG)
+
+        # Only attach to parent (as configure() would do)
+        parent = logging.getLogger("test.dedup.builders")
+        parent.addHandler(bridge)
+        parent.setLevel(logging.DEBUG)
+
+        child = logging.getLogger("test.dedup.builders.mobile")
+        child.setLevel(logging.DEBUG)
+        # child.propagate=True by default → propagates to parent
+
+        child.error("mobile build failed")
+
+        # Should appear exactly once via propagation to parent
+        mobile_entries = [
+            e for e in sink.entries if e.return_value == "mobile build failed"
+        ]
+        assert len(mobile_entries) == 1
+        assert mobile_entries[0].module == "test.dedup.builders.mobile"
+
+        parent.removeHandler(bridge)
+        lgr.close()
+
+    def test_bridge_exception_info(self):
+        sink = MemorySink()
+        lgr = Logger(name="test-bridge-exc", sinks=[sink], propagate_stdlib=False)
+
+        bridge = _StdlibBridge(lgr)
+        bridge.setLevel(logging.DEBUG)
+
+        stdlib_logger = logging.getLogger("test.bridge.exc")
+        stdlib_logger.addHandler(bridge)
+        stdlib_logger.setLevel(logging.DEBUG)
+
+        try:
+            raise ValueError("test error")
+        except ValueError:
+            stdlib_logger.exception("caught error")
+
+        assert len(sink.entries) == 1
+        assert sink.entries[0].exception == "test error"
+        assert sink.entries[0].exception_type == "ValueError"
 
         stdlib_logger.removeHandler(bridge)
         lgr.close()

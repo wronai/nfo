@@ -61,22 +61,30 @@ class _StdlibBridge(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
         from nfo.models import LogEntry
 
+        message = record.getMessage()
+        func = record.funcName or ""
+        # Build a qualified function reference for better traceability
+        if record.name and func and func not in ("", "<module>"):
+            qualified = f"{record.name}.{func}"
+        else:
+            qualified = record.name or func
+
         entry = LogEntry(
             timestamp=LogEntry.now(),
             level=record.levelname,
-            function_name=record.funcName or "",
+            function_name=qualified,
             module=record.name,
             args=(),
             kwargs={},
             arg_types=[],
             kwarg_types={},
-            return_value=None,
-            return_type=None,
+            return_value=message,
+            return_type="str",
             exception=str(record.exc_info[1]) if record.exc_info and record.exc_info[1] else None,
             exception_type=type(record.exc_info[1]).__name__ if record.exc_info and record.exc_info[1] else None,
             traceback=self.format(record) if record.exc_info else None,
             duration_ms=None,
-            extra={"message": record.getMessage()},
+            extra={"message": message, "source": "stdlib_bridge"},
         )
         for sink in self._nfo_logger._sinks:
             try:
@@ -239,10 +247,19 @@ def configure(
                 root.addHandler(bridge)
 
         if modules:
-            for mod in modules:
+            # Sort so parents come before children (shorter names first).
+            # Only attach bridge to a logger if no ancestor in the list
+            # already has it — stdlib propagation handles children.
+            bridged: set[str] = set()
+            for mod in sorted(modules, key=len):
+                has_ancestor = any(
+                    mod.startswith(anc + ".") for anc in bridged
+                )
                 mod_logger = logging.getLogger(mod)
-                if bridge not in mod_logger.handlers:
-                    mod_logger.addHandler(bridge)
+                if not has_ancestor:
+                    if bridge not in mod_logger.handlers:
+                        mod_logger.addHandler(bridge)
+                    bridged.add(mod)
 
     _configured = True
     return logger
