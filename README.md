@@ -532,16 +532,52 @@ Each `@log_call` / `@catch` captures:
 
 See the [`examples/`](examples/) directory:
 
+### Python — Core
+
 - [`basic_usage.py`](examples/basic_usage.py) — `@log_call` and `@catch` basics
 - [`sqlite_sink.py`](examples/sqlite_sink.py) — logging to SQLite + querying
 - [`csv_sink.py`](examples/csv_sink.py) — logging to CSV
 - [`markdown_sink.py`](examples/markdown_sink.py) — logging to Markdown
 - [`multi_sink.py`](examples/multi_sink.py) — all three sinks at once
+- [`async_usage.py`](examples/async_usage.py) — transparent `async def` support
+- [`auto_log_usage.py`](examples/auto_log_usage.py) — `auto_log()` zero-decorator module patching
+- [`configure_usage.py`](examples/configure_usage.py) — `configure()` one-liner setup with env tagging
+- [`env_tagger_usage.py`](examples/env_tagger_usage.py) — `EnvTagger`, `DynamicRouter`, `DiffTracker`
 
-Run any example:
+### Shell / Multi-language Integration
+
+- [`bash_wrapper.py`](examples/bash_wrapper.py) — nfo-bash proxy: run any shell script through nfo logging
+- [`bash_client.sh`](examples/bash_client.sh) — zero-dependency Bash HTTP client for nfo-service
+- [`http_service.py`](examples/http_service.py) — centralized HTTP logging service (FastAPI) for any language
+- [`go_client.go`](examples/go_client.go) — Go HTTP client for nfo-service
+- [`rust_client.rs`](examples/rust_client.rs) — Rust HTTP client for nfo-service
+
+### DevOps / Infrastructure
+
+- [`docker-compose-service.yml`](examples/docker-compose-service.yml) — Docker Compose stack with nfo-service + multi-lang apps
+- [`kubernetes/`](examples/kubernetes/) — Kubernetes Deployment + Service + PVC for nfo-logger
+- [`nfo.proto`](examples/nfo.proto) — gRPC service definition for high-performance logging
+
+Run any Python example:
 ```bash
 pip install nfo
 python examples/basic_usage.py
+```
+
+Run the centralized logging service:
+```bash
+pip install nfo fastapi uvicorn
+python examples/http_service.py
+# Then from any language:
+curl -X POST http://localhost:8080/log \
+  -H "Content-Type: application/json" \
+  -d '{"cmd":"deploy","args":["prod"],"language":"bash"}'
+```
+
+Run scripts through nfo-bash wrapper:
+```bash
+python examples/bash_wrapper.py ./deploy.sh prod
+# All calls logged to bash_logs.db with args, stdout/stderr, duration, return code
 ```
 
 ## Roadmap (v0.3.x)
