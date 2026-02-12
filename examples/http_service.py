@@ -29,6 +29,17 @@ import time
 from pathlib import Path
 from typing import List, Optional
 
+# Load .env if python-dotenv is available (optional)
+try:
+    from dotenv import load_dotenv
+    _env_file = Path(__file__).parent / ".env"
+    if not _env_file.exists():
+        _env_file = Path(__file__).parent / ".env.example"
+    if _env_file.exists():
+        load_dotenv(_env_file, override=False)
+except ImportError:
+    pass  # python-dotenv is optional
+
 from nfo import Logger, SQLiteSink, CSVSink, JSONSink
 
 # ---------------------------------------------------------------------------
@@ -54,6 +65,9 @@ Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
 DB_PATH = f"{LOG_DIR}/nfo_central.db"
 CSV_PATH = f"{LOG_DIR}/nfo_central.csv"
 JSONL_PATH = f"{LOG_DIR}/nfo_central.jsonl"
+
+NFO_HOST = os.environ.get("NFO_HOST", "0.0.0.0")
+NFO_PORT = int(os.environ.get("NFO_PORT", "8080"))
 
 # ---------------------------------------------------------------------------
 # nfo Logger setup
@@ -181,5 +195,6 @@ if __name__ == "__main__":
     print(f"  DB:   {DB_PATH}")
     print(f"  CSV:  {CSV_PATH}")
     print(f"  JSONL: {JSONL_PATH}")
+    print(f"  Host: {NFO_HOST}:{NFO_PORT}")
     print()
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(app, host=NFO_HOST, port=NFO_PORT)
