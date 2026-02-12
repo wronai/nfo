@@ -321,6 +321,66 @@ configure(
 #   NFO_SINKS=sqlite:app.db,csv:app.csv
 ```
 
+## `.env` Configuration
+
+nfo reads `NFO_*` environment variables automatically. Use a `.env` file for project-specific settings:
+
+```bash
+cp .env.example .env   # copy template, adjust values
+```
+
+`.env.example`:
+```bash
+# Core
+NFO_LEVEL=DEBUG
+NFO_SINKS=sqlite:logs/app.db,csv:logs/app.csv
+
+# Environment tagging (auto-detected if not set)
+NFO_ENV=dev
+NFO_VERSION=1.0.0
+
+# LLM analysis (optional, requires: pip install nfo[llm])
+# NFO_LLM_MODEL=gpt-4o-mini
+# OPENAI_API_KEY=sk-...
+
+# HTTP service
+NFO_LOG_DIR=./logs
+NFO_PORT=8080
+
+# Webhook alerts
+# NFO_WEBHOOK_URL=https://hooks.slack.com/services/T.../B.../xxx
+
+# Prometheus
+NFO_PROMETHEUS_PORT=9090
+```
+
+Load in Python with `python-dotenv`:
+```python
+from dotenv import load_dotenv
+load_dotenv()  # loads .env into os.environ
+
+from nfo import configure
+configure()  # reads NFO_LEVEL, NFO_SINKS, NFO_ENV, etc. automatically
+```
+
+Load in Docker Compose:
+```yaml
+services:
+  app:
+    env_file:
+      - .env
+    environment:
+      - NFO_ENV=docker  # override specific values
+```
+
+Load in Bash:
+```bash
+set -a; source .env; set +a
+python examples/http_service.py
+```
+
+See [`examples/.env.example`](examples/.env.example) for all available variables with descriptions.
+
 ## Async Support
 
 `@log_call`, `@catch`, and `@logged` transparently detect `async def` functions — no separate decorator needed:
@@ -542,6 +602,7 @@ See the [`examples/`](examples/) directory:
 - [`async_usage.py`](examples/async_usage.py) — transparent `async def` support
 - [`auto_log_usage.py`](examples/auto_log_usage.py) — `auto_log()` zero-decorator module patching
 - [`configure_usage.py`](examples/configure_usage.py) — `configure()` one-liner setup with env tagging
+- [`env_config_usage.py`](examples/env_config_usage.py) — `.env` file configuration with `python-dotenv`
 - [`env_tagger_usage.py`](examples/env_tagger_usage.py) — `EnvTagger`, `DynamicRouter`, `DiffTracker`
 
 ### Shell / Multi-language Integration
@@ -552,9 +613,14 @@ See the [`examples/`](examples/) directory:
 - [`go_client.go`](examples/go_client.go) — Go HTTP client for nfo-service
 - [`rust_client.rs`](examples/rust_client.rs) — Rust HTTP client for nfo-service
 
+### Configuration
+
+- [`.env.example`](examples/.env.example) — all `NFO_*` environment variables with descriptions
+- [`env_config_usage.py`](examples/env_config_usage.py) — loading `.env` in Python with `python-dotenv`
+
 ### DevOps / Infrastructure
 
-- [`docker-compose-service.yml`](examples/docker-compose-service.yml) — Docker Compose stack with nfo-service + multi-lang apps
+- [`docker-compose-service.yml`](examples/docker-compose-service.yml) — Docker Compose stack with `env_file` support
 - [`kubernetes/`](examples/kubernetes/) — Kubernetes Deployment + Service + PVC for nfo-logger
 - [`nfo.proto`](examples/nfo.proto) — gRPC service definition for high-performance logging
 
