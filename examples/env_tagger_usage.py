@@ -59,10 +59,11 @@ def demo_env_tagger():
     conn.row_factory = sqlite3.Row
     row = conn.execute("SELECT * FROM logs ORDER BY timestamp DESC LIMIT 1").fetchone()
     if row:
-        print(f"  function: {row['function_name']}")
-        print(f"  environment: {row.get('environment', 'N/A')}")
-        print(f"  trace_id: {row.get('trace_id', 'N/A')}")
-        print(f"  version: {row.get('version', 'N/A')}")
+        d = dict(row)
+        print(f"  function: {d.get('function_name', 'N/A')}")
+        print(f"  environment: {d.get('environment', 'N/A')}")
+        print(f"  trace_id: {d.get('trace_id', 'N/A')}")
+        print(f"  version: {d.get('version', 'N/A')}")
     conn.close()
     print()
 
