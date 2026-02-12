@@ -25,19 +25,56 @@
 - [x] README with comparison table, integration guide, LLM features
 - [x] CHANGELOG.md
 
-## 🔜 Next
+## 🔜 Next (v0.2.x)
+
+### New Sinks
+
+- [ ] `PrometheusSink` — export metrics (duration, error rate, call count) to Prometheus; optional dep `prometheus_client`; auto `/metrics` endpoint
+- [ ] `WebhookSink` — HTTP POST alerts to Slack/Discord/Teams on ERROR; configurable URL + payload template
+- [ ] `OTELSink` — OpenTelemetry spans for distributed tracing; export to Jaeger/Zipkin via OTLP; optional dep `opentelemetry-sdk`
+- [ ] `JSONSink` — structured JSON output for ELK/Grafana Loki
+- [ ] `ElasticsearchSink` — direct Elasticsearch indexing for production log aggregation
+
+### Web Dashboard
+
+- [ ] Lightweight Flask/FastAPI server for browsing SQLite logs
+- [ ] Filter by `trace_id`, `environment`, `level`, `function_name`, date range
+- [ ] Endpoint: `GET /query?env=prod&level=ERROR&last=24h`
+- [ ] Optional dep: `pip install nfo[dashboard]`
+
+### Replay & Testing
+
+- [ ] `replay_logs()` — replay function calls from SQLite logs for regression testing
+- [ ] `replay_from_sqlite("logs.db", max_calls=100)` — bounded replay with assertions
+
+### Core Improvements
 
 - [ ] Log viewer CLI: `nfo query logs.db --level ERROR --last 24h`
-- [ ] Structured JSON sink for ELK/Grafana Loki
 - [ ] Log rotation for file-based sinks (CSV, Markdown)
 - [ ] Sampling: log only N% of calls for high-throughput functions
-- [ ] OpenTelemetry span integration (attach nfo entries to OTEL traces)
-- [ ] `ElasticsearchSink` — for production log aggregation
 - [ ] GitHub Actions integration: auto-comment LLM analysis on failed CI builds
-- [ ] Dashboard: web UI for browsing SQLite logs
+
+### Composable Pipeline (target)
+
+```python
+# Full monitoring stack
+sink = PrometheusSink(       # metrics → Grafana
+    WebhookSink(             # alerts → Slack
+        OTELSink(            # tracing → Jaeger
+            EnvTagger(       # tagging
+                SQLiteSink("logs.db")
+            )
+        ),
+        url="https://hooks.slack.com/...",
+        levels=["ERROR"],
+    ),
+    port=9090,
+)
+```
 
 ## 💡 Ideas
 
+- `GraphQLSink` — GraphQL query interface over SQLite logs (`{ errors(env: "prod") { func duration } }`)
 - `PineconeSink` / `VectorSink` — semantic log search via embeddings
 - LangChain/LlamaIndex integration for semantic log search
 - Auto-generate unit tests from logged function calls

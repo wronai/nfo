@@ -423,35 +423,34 @@ Each `@log_call` / `@catch` captures:
 
 ## Comparison with Other Libraries
 
-| Feature | **nfo** | loguru | structlog | stdlib logging |
-|---|:---:|:---:|:---:|:---:|
-| Auto-log all functions (`auto_log()`) | ✅ | ❌ | ❌ | ❌ |
-| Class decorator (`@logged`) | ✅ | ❌ | ❌ | ❌ |
-| One-liner project setup (`configure()`) | ✅ | ⚠️ partial | ⚠️ partial | ❌ |
-| Capture args/kwargs/types automatically | ✅ | ❌ | ❌ | ❌ |
-| Capture return value + type | ✅ | ❌ | ❌ | ❌ |
-| Capture duration per call | ✅ | ❌ | ❌ | ❌ |
-| Exception catch + continue (`@catch`) | ✅ | ⚠️ `@logger.catch` | ❌ | ❌ |
-| SQLite sink (queryable logs) | ✅ | ❌ | ❌ | ❌ |
-| CSV sink | ✅ | ❌ | ❌ | ❌ |
-| Markdown sink | ✅ | ❌ | ❌ | ❌ |
-| LLM-powered log analysis | ✅ litellm | ❌ | ❌ | ❌ |
-| Prompt injection detection | ✅ | ❌ | ❌ | ❌ |
-| Multi-env correlation (K8s/Docker/CI) | ✅ auto-detect | ❌ | ⚠️ manual | ❌ |
-| Dynamic sink routing by env/level | ✅ | ❌ | ❌ | ⚠️ filters |
-| Version diff tracking | ✅ | ❌ | ❌ | ❌ |
-| Bridge stdlib loggers | ✅ | ⚠️ intercept | ✅ | N/A |
-| Structured output | ✅ dataclass | ⚠️ string | ✅ dict | ❌ |
-| Zero dependencies (core) | ✅ | ❌ | ❌ | ✅ |
-| Async support (transparent) | ✅ auto-detect | ❌ | ❌ | ❌ |
-| Composable sink pipeline | ✅ | ❌ | ✅ processors | ❌ |
+| Feature | **nfo** | polog | logdecorator | loguru | structlog | stdlib |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| Auto-log all functions (`auto_log()`) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Class decorator (`@logged`) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| One-liner project setup (`configure()`) | ✅ | ⚠️ | ❌ | ⚠️ | ⚠️ | ❌ |
+| Capture args/kwargs/types automatically | ✅ | ⚠️ manual | ⚠️ manual | ❌ | ❌ | ❌ |
+| Capture return value + type | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Capture duration per call | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Exception catch + continue (`@catch`) | ✅ | ✅ | ❌ | ⚠️ `@logger.catch` | ❌ | ❌ |
+| SQLite sink (queryable logs) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| CSV / Markdown sinks | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| LLM-powered log analysis | ✅ litellm | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Prompt injection detection | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Multi-env correlation (K8s/Docker/CI) | ✅ auto | ❌ | ❌ | ❌ | ⚠️ manual | ❌ |
+| Dynamic sink routing by env/level | ✅ | ❌ | ❌ | ❌ | ❌ | ⚠️ filters |
+| Version diff tracking | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Async support (transparent) | ✅ auto | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Composable sink pipeline | ✅ | ❌ | ❌ | ❌ | ✅ processors | ❌ |
+| Zero dependencies (core) | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 
-**Key differences:**
+### Alternatives
 
-- **loguru** — great for human-readable console output, but no auto-function-logging, no structured sinks (SQLite/CSV), no LLM integration
-- **structlog** — excellent for structured key-value logs, but requires manual `log.info("msg", key=val)` calls everywhere; no auto-capture of args/return/duration
+- **[polog](https://pypi.org/project/polog/)** — decorator-based logger with file output; manual per-function setup, no module-level auto-patching, no structured sinks (SQLite/CSV), no LLM integration
+- **[logdecorator](https://pypi.org/project/logdecorator/)** — simple decorator for logging function calls to stdlib logger; single-function only, no sinks, no exception catching, no async
+- **[loguru](https://github.com/Delgan/loguru)** — excellent human-readable console output with `@logger.catch`; no auto-function-logging, no structured sinks (SQLite/CSV), no LLM integration
+- **[structlog](https://github.com/hynek/structlog)** — powerful structured key-value logs with processors; requires manual `log.info("msg", key=val)` calls, no auto-capture of args/return/duration
 - **stdlib logging** — ubiquitous but verbose config, no auto-function-logging, no structured sinks
-- **nfo** — the only library that auto-captures function signatures, args, return values, and exceptions with zero boilerplate (`auto_log()` or `@logged`), writes to queryable sinks, and integrates LLM analysis
+- **nfo** — the only library that auto-captures function signatures, args, return values, and exceptions with zero boilerplate (`auto_log()` or `@logged`), writes to queryable sinks (SQLite/CSV/Markdown), and integrates LLM-powered analysis + prompt injection detection
 
 ## Examples
 
@@ -468,6 +467,17 @@ Run any example:
 pip install nfo
 python examples/basic_usage.py
 ```
+
+## Roadmap (v0.2.x)
+
+See [`TODO.md`](TODO.md) for the full roadmap. Key planned features:
+
+- **`PrometheusSink`** — export metrics (duration, error rate) to Prometheus/Grafana
+- **`WebhookSink`** — Slack/Discord/Teams alerts on ERROR
+- **`OTELSink`** — OpenTelemetry spans for distributed tracing (Jaeger/Zipkin)
+- **Web Dashboard** — lightweight Flask/FastAPI UI for browsing SQLite logs with filters
+- **`replay_logs()`** — replay function calls from logs for regression testing
+- **Log viewer CLI** — `nfo query logs.db --level ERROR --last 24h`
 
 ## Development
 

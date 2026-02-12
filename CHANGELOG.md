@@ -1,3 +1,29 @@
+## [0.1.21] - 2026-02-12
+
+### Summary
+
+fix(tests): configuration management system
+
+### Docs
+
+- docs: update README
+- docs: update TODO.md
+
+### Test
+
+- update tests/test_json_sink.py
+- update tests/test_prometheus.py
+- update tests/test_webhook.py
+
+### Other
+
+- update nfo/__init__.py
+- update nfo/configure.py
+- update nfo/json_sink.py
+- update nfo/prometheus.py
+- update nfo/webhook.py
+
+
 ## [0.1.20] - 2026-02-12
 
 ### Summary
