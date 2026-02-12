@@ -137,3 +137,96 @@ class TestCatch:
 
         assert ok() == 42
         assert sink.entries[0].return_value == 42
+
+
+# -- async support -----------------------------------------------------------
+
+class TestAsyncLogCall:
+
+    @pytest.mark.asyncio
+    async def test_logs_async_return(self, logger):
+        lgr, sink = logger
+
+        @log_call
+        async def fetch(url):
+            return f"data from {url}"
+
+        result = await fetch("http://example.com")
+        assert result == "data from http://example.com"
+        assert len(sink.entries) == 1
+        entry = sink.entries[0]
+        assert entry.return_value == "data from http://example.com"
+        assert entry.level == "DEBUG"
+
+    @pytest.mark.asyncio
+    async def test_logs_async_exception(self, logger):
+        lgr, sink = logger
+
+        @log_call
+        async def fail():
+            raise ValueError("async boom")
+
+        with pytest.raises(ValueError, match="async boom"):
+            await fail()
+
+        assert len(sink.entries) == 1
+        assert sink.entries[0].level == "ERROR"
+        assert sink.entries[0].exception == "async boom"
+
+    @pytest.mark.asyncio
+    async def test_async_custom_level(self, logger):
+        lgr, sink = logger
+
+        @log_call(level="WARNING")
+        async def warn():
+            return "warned"
+
+        await warn()
+        assert sink.entries[0].level == "WARNING"
+
+    @pytest.mark.asyncio
+    async def test_async_preserves_coroutine(self, logger):
+        import inspect as ins
+        lgr, sink = logger
+
+        @log_call
+        async def coro():
+            return 1
+
+        assert ins.iscoroutinefunction(coro)
+
+
+class TestAsyncCatch:
+
+    @pytest.mark.asyncio
+    async def test_async_suppresses_exception(self, logger):
+        lgr, sink = logger
+
+        @catch
+        async def fail():
+            raise RuntimeError("async oops")
+
+        result = await fail()
+        assert result is None
+        assert sink.entries[0].level == "ERROR"
+
+    @pytest.mark.asyncio
+    async def test_async_returns_default(self, logger):
+        lgr, sink = logger
+
+        @catch(default="fallback")
+        async def fail():
+            raise RuntimeError("oops")
+
+        assert await fail() == "fallback"
+
+    @pytest.mark.asyncio
+    async def test_async_success_path(self, logger):
+        lgr, sink = logger
+
+        @catch
+        async def ok():
+            return 99
+
+        assert await ok() == 99
+        assert sink.entries[0].return_value == 99

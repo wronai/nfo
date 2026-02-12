@@ -73,6 +73,50 @@ def log_call(func: Optional[F] = None, *, level: str = "DEBUG", logger: Any = No
     """
 
     def decorator(fn: F) -> F:
+        if inspect.iscoroutinefunction(fn):
+            @functools.wraps(fn)
+            async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
+                _logger = logger or _get_default_logger()
+                arg_t, kwarg_t = _arg_types(args, kwargs)
+                start = time.perf_counter()
+                try:
+                    result = await fn(*args, **kwargs)
+                    duration = (time.perf_counter() - start) * 1000
+                    entry = LogEntry(
+                        timestamp=LogEntry.now(),
+                        level=level.upper(),
+                        function_name=fn.__qualname__,
+                        module=_module_of(fn),
+                        args=args,
+                        kwargs=kwargs,
+                        arg_types=arg_t,
+                        kwarg_types=kwarg_t,
+                        return_value=result,
+                        return_type=type(result).__name__,
+                        duration_ms=round(duration, 3),
+                    )
+                    _logger.emit(entry)
+                    return result
+                except Exception as exc:
+                    duration = (time.perf_counter() - start) * 1000
+                    entry = LogEntry(
+                        timestamp=LogEntry.now(),
+                        level="ERROR",
+                        function_name=fn.__qualname__,
+                        module=_module_of(fn),
+                        args=args,
+                        kwargs=kwargs,
+                        arg_types=arg_t,
+                        kwarg_types=kwarg_t,
+                        exception=str(exc),
+                        exception_type=type(exc).__name__,
+                        traceback=tb_mod.format_exc(),
+                        duration_ms=round(duration, 3),
+                    )
+                    _logger.emit(entry)
+                    raise
+            return async_wrapper  # type: ignore[return-value]
+
         @functools.wraps(fn)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             _logger = logger or _get_default_logger()
@@ -140,6 +184,50 @@ def catch(func: Optional[F] = None, *, level: str = "DEBUG", logger: Any = None,
     """
 
     def decorator(fn: F) -> F:
+        if inspect.iscoroutinefunction(fn):
+            @functools.wraps(fn)
+            async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
+                _logger = logger or _get_default_logger()
+                arg_t, kwarg_t = _arg_types(args, kwargs)
+                start = time.perf_counter()
+                try:
+                    result = await fn(*args, **kwargs)
+                    duration = (time.perf_counter() - start) * 1000
+                    entry = LogEntry(
+                        timestamp=LogEntry.now(),
+                        level=level.upper(),
+                        function_name=fn.__qualname__,
+                        module=_module_of(fn),
+                        args=args,
+                        kwargs=kwargs,
+                        arg_types=arg_t,
+                        kwarg_types=kwarg_t,
+                        return_value=result,
+                        return_type=type(result).__name__,
+                        duration_ms=round(duration, 3),
+                    )
+                    _logger.emit(entry)
+                    return result
+                except Exception as exc:
+                    duration = (time.perf_counter() - start) * 1000
+                    entry = LogEntry(
+                        timestamp=LogEntry.now(),
+                        level="ERROR",
+                        function_name=fn.__qualname__,
+                        module=_module_of(fn),
+                        args=args,
+                        kwargs=kwargs,
+                        arg_types=arg_t,
+                        kwarg_types=kwarg_t,
+                        exception=str(exc),
+                        exception_type=type(exc).__name__,
+                        traceback=tb_mod.format_exc(),
+                        duration_ms=round(duration, 3),
+                    )
+                    _logger.emit(entry)
+                    return default
+            return async_wrapper  # type: ignore[return-value]
+
         @functools.wraps(fn)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             _logger = logger or _get_default_logger()
