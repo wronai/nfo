@@ -637,106 +637,82 @@ Each `@log_call` / `@catch` captures:
 
 ## Examples
 
-See the [`examples/`](examples/) directory:
+Each example lives in its own directory with a `readme.md` and runnable code.
+
+```
+examples/
+├── .env.example              # shared NFO_* environment variables
+├── basic-usage/              # @log_call and @catch basics
+├── sqlite-sink/              # logging to SQLite + querying
+├── csv-sink/                 # logging to CSV
+├── markdown-sink/            # logging to Markdown
+├── multi-sink/               # all three sinks at once
+├── async-usage/              # transparent async def support
+├── auto-log/                 # auto_log() zero-decorator module patching
+├── configure/                # configure() one-liner setup
+├── env-config/               # .env file configuration with python-dotenv
+├── env-tagger/               # EnvTagger, DynamicRouter, DiffTracker
+├── bash-wrapper/             # run shell scripts through nfo logging
+├── bash-client/              # zero-dependency Bash HTTP client (curl)
+├── http-service/             # centralized HTTP logging service (FastAPI)
+├── go-client/                # Go HTTP client
+├── rust-client/              # Rust HTTP client
+├── grpc-service/             # gRPC server + client + proto
+├── docker-compose/           # Docker Compose stack (HTTP + gRPC)
+└── kubernetes/               # Kubernetes Deployment + Service + PVC
+```
 
 ### Python — Core
 
-- [`basic_usage.py`](examples/basic_usage.py) — `@log_call` and `@catch` basics
-- [`sqlite_sink.py`](examples/sqlite_sink.py) — logging to SQLite + querying
-- [`csv_sink.py`](examples/csv_sink.py) — logging to CSV
-- [`markdown_sink.py`](examples/markdown_sink.py) — logging to Markdown
-- [`multi_sink.py`](examples/multi_sink.py) — all three sinks at once
-- [`async_usage.py`](examples/async_usage.py) — transparent `async def` support
-- [`auto_log_usage.py`](examples/auto_log_usage.py) — `auto_log()` zero-decorator module patching
-- [`configure_usage.py`](examples/configure_usage.py) — `configure()` one-liner setup with env tagging
-- [`env_config_usage.py`](examples/env_config_usage.py) — `.env` file configuration with `python-dotenv`
-- [`env_tagger_usage.py`](examples/env_tagger_usage.py) — `EnvTagger`, `DynamicRouter`, `DiffTracker`
+| Example | Description | Run |
+|---------|-------------|-----|
+| [**basic-usage**](examples/basic-usage/readme.md) | `@log_call` and `@catch` basics | `python examples/basic-usage/main.py` |
+| [**sqlite-sink**](examples/sqlite-sink/readme.md) | Logging to SQLite + querying | `python examples/sqlite-sink/main.py` |
+| [**csv-sink**](examples/csv-sink/readme.md) | Logging to CSV | `python examples/csv-sink/main.py` |
+| [**markdown-sink**](examples/markdown-sink/readme.md) | Logging to Markdown | `python examples/markdown-sink/main.py` |
+| [**multi-sink**](examples/multi-sink/readme.md) | All three sinks at once | `python examples/multi-sink/main.py` |
+| [**async-usage**](examples/async-usage/readme.md) | Transparent `async def` support | `python examples/async-usage/main.py` |
+| [**auto-log**](examples/auto-log/readme.md) | `auto_log()` zero-decorator patching | `python examples/auto-log/main.py` |
+| [**configure**](examples/configure/readme.md) | `configure()` one-liner setup | `python examples/configure/main.py` |
+| [**env-config**](examples/env-config/readme.md) | `.env` configuration with `python-dotenv` | `python examples/env-config/main.py` |
+| [**env-tagger**](examples/env-tagger/readme.md) | `EnvTagger`, `DynamicRouter`, `DiffTracker` | `python examples/env-tagger/main.py` |
 
 ### Shell / Multi-language Integration
 
-- [`bash_wrapper.py`](examples/bash_wrapper.py) — nfo-bash proxy: run any shell script through nfo logging
-- [`bash_client.sh`](examples/bash_client.sh) — zero-dependency Bash HTTP client for nfo-service
-- [`http_service.py`](examples/http_service.py) — centralized HTTP logging service (FastAPI) for any language
-- [`go_client.go`](examples/go_client.go) — Go HTTP client for nfo-service
-- [`rust_client.rs`](examples/rust_client.rs) — Rust HTTP client for nfo-service
+| Example | Description | Run |
+|---------|-------------|-----|
+| [**bash-wrapper**](examples/bash-wrapper/readme.md) | Run shell scripts through nfo logging | `python examples/bash-wrapper/main.py echo "hello"` |
+| [**bash-client**](examples/bash-client/readme.md) | Zero-dep Bash HTTP client for nfo-service | `bash examples/bash-client/main.sh` |
+| [**http-service**](examples/http-service/readme.md) | Centralized HTTP logging service (FastAPI) | `python examples/http-service/main.py` |
+| [**go-client**](examples/go-client/readme.md) | Go HTTP client | `go run examples/go-client/main.go` |
+| [**rust-client**](examples/rust-client/readme.md) | Rust HTTP client | `cargo run` in `examples/rust-client/` |
 
-### gRPC (high-performance)
+### gRPC / CLI / DevOps
 
-- [`nfo.proto`](examples/nfo.proto) — gRPC service definition (generate clients for any language)
-- [`grpc_server.py`](examples/grpc_server.py) — Python gRPC server: `LogCall`, `BatchLog`, `StreamLog`, `QueryLogs`
-- [`grpc_client.py`](examples/grpc_client.py) — Python gRPC client demo (all 4 RPCs)
+| Example | Description | Run |
+|---------|-------------|-----|
+| [**grpc-service**](examples/grpc-service/readme.md) | gRPC server + client (4 RPCs) | `python examples/grpc-service/server.py` |
+| [**docker-compose**](examples/docker-compose/readme.md) | Docker Compose stack (HTTP + gRPC) | `docker compose -f examples/docker-compose/docker-compose.yml up` |
+| [**kubernetes**](examples/kubernetes/readme.md) | K8s Deployment + Service + PVC | `kubectl apply -f examples/kubernetes/` |
 
-```bash
-# Install
-pip install nfo[grpc]
-
-# Generate stubs (already included, but regenerate if proto changes)
-cd examples/ && python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. nfo.proto
-
-# Start gRPC server
-python examples/grpc_server.py              # default: port 50051
-python examples/grpc_server.py --port 50052 # custom port
-
-# Test with Python client
-python examples/grpc_client.py
-```
-
-### CLI — Universal Command Proxy
+### Quick start
 
 ```bash
-# Run any command with automatic logging
-nfo run -- bash deploy.sh prod
-nfo run -- python3 train.py --epochs=10
-nfo run -- docker build .
-nfo run -- go run main.go
-
-# Custom sink and environment
-nfo run --sink sqlite:prod.db --env prod -- ./deploy.sh
-
-# Query logs
-nfo logs                              # last 20 entries
-nfo logs app.db --errors              # only errors
-nfo logs --level ERROR --last 24h     # last 24h errors
-nfo logs --function deploy -n 50      # filter by function
-
-# Start centralized HTTP logging service
-nfo serve                             # default: 0.0.0.0:8080
-nfo serve --port 9090                 # custom port
-
-# Version
-nfo version
-```
-
-### Configuration
-
-- [`.env.example`](examples/.env.example) — all `NFO_*` environment variables with descriptions
-- [`env_config_usage.py`](examples/env_config_usage.py) — loading `.env` in Python with `python-dotenv`
-
-### DevOps / Infrastructure
-
-- [`docker-compose-service.yml`](examples/docker-compose-service.yml) — Docker Compose stack: HTTP + gRPC services with `env_file`
-- [`kubernetes/`](examples/kubernetes/) — Kubernetes Deployment + Service + PVC for nfo-logger
-
-Run any Python example:
-```bash
+# Run any Python example
 pip install nfo
-python examples/basic_usage.py
-```
+python examples/basic-usage/main.py
 
-Run the centralized logging service:
-```bash
+# Run centralized HTTP logging service
 pip install nfo fastapi uvicorn
-python examples/http_service.py
-# Then from any language:
-curl -X POST http://localhost:8080/log \
-  -H "Content-Type: application/json" \
-  -d '{"cmd":"deploy","args":["prod"],"language":"bash"}'
-```
+python examples/http-service/main.py
 
-Run scripts through nfo-bash wrapper:
-```bash
-python examples/bash_wrapper.py ./deploy.sh prod
-# All calls logged to bash_logs.db with args, stdout/stderr, duration, return code
+# Run gRPC service
+pip install nfo[grpc]
+python examples/grpc-service/server.py
+
+# Use CLI proxy
+python -m nfo run -- bash deploy.sh prod
+python -m nfo logs
 ```
 
 ## Roadmap (v0.3.x)
