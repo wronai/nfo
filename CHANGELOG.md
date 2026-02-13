@@ -1,3 +1,18 @@
+## [0.2.4] - 2026-02-13
+
+### Summary
+
+feat(docs): deep code analysis engine with 6 supporting modules
+
+### Docs
+
+- docs: update README
+
+### Other
+
+- update img.png
+
+
 # Changelog
 
 All notable changes to `nfo` are documented here.

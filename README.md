@@ -1,3 +1,5 @@
+![img.png](img.png)
+
 # nfo
 
 **Automatic function logging with decorators — output to SQLite, CSV, Markdown, JSON, Prometheus + Slack/Discord alerts.**
@@ -50,6 +52,182 @@ Output (stderr):
 2026-02-11 21:59:34 | DEBUG | nfo | add() | args=(3, 7) | -> 10 | [0.00ms]
 2026-02-11 21:59:34 | ERROR | nfo | risky() | args=(0,) | EXCEPTION ZeroDivisionError: division by zero | [0.00ms]
 ```
+
+## Why nfo?
+
+### 1. Zero boilerplate → full observability
+
+**stdlib logging** — 15 lines to log one function:
+```python
+import logging
+logger = logging.getLogger(__name__)
+handler = logging.FileHandler("app.log")
+handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+logger.addHandler(handler)
+
+def create_user(name, email):
+    logger.info(f"create_user called with name={name}, email={email}")
+    try:
+        result = {"name": name, "email": email, "id": 42}
+        logger.info(f"create_user returned {result}")
+        return result
+    except Exception as e:
+        logger.exception(f"create_user failed: {e}")
+        raise
+```
+
+**nfo** — 1 decorator, full structured output (args, types, return value, duration, traceback):
+```python
+from nfo import log_call
+
+@log_call
+def create_user(name, email):
+    return {"name": name, "email": email, "id": 42}
+```
+
+Or **zero decorators** — one line patches an entire module:
+```python
+import nfo
+nfo.auto_log()  # all public functions in this module are now logged
+```
+
+### 2. DevOps: log any command in any language
+
+Traditional approach — write a custom wrapper for each tool:
+```bash
+#!/bin/bash
+start=$(date +%s%N)
+bash deploy.sh prod 2>&1 | tee deploy.log
+end=$(date +%s%N)
+echo "Duration: $(( (end - start) / 1000000 ))ms" >> deploy.log
+echo "Exit code: $?" >> deploy.log
+# Now parse the log file manually...
+```
+
+**nfo** — one command, structured SQLite output:
+```bash
+nfo run -- bash deploy.sh prod
+nfo run -- python3 train.py --epochs=10
+nfo run -- docker build -t myapp .
+nfo run -- go test ./...
+
+# All in queryable SQLite — args, stdout, stderr, return code, duration, language
+nfo logs --errors --last 24h
+```
+
+Scale to a **centralized logging service** for all your microservices:
+```bash
+nfo serve --port 8080   # start HTTP service
+
+# Any language, any container, one endpoint:
+curl -X POST http://nfo:8080/log \
+  -d '{"cmd":"deploy","args":["prod"],"language":"go","duration_ms":1234}'
+```
+
+### 3. LLM-powered root-cause analysis (unique to nfo)
+
+No other logging library does this. When an error occurs, nfo sends the function context to an LLM and stores the analysis:
+
+```python
+from nfo import configure, LLMSink, SQLiteSink
+
+configure(sinks=[
+    LLMSink(
+        model="gpt-4o-mini",                 # or ollama/llama3, anthropic/claude
+        delegate=SQLiteSink("logs.db"),
+        detect_injection=True,                # bonus: prompt injection scanner
+    )
+])
+
+@log_call
+def process_payment(user_id: int, amount: float):
+    return db.execute("INSERT INTO payments ...")  # fails in prod
+
+# On ERROR, nfo sends to LLM:
+#   function: process_payment
+#   args: (42, 99.99)
+#   exception: IntegrityError: UNIQUE constraint failed
+#   traceback: ...
+#
+# LLM returns: "Root cause: duplicate payment attempt. The payments table
+#   has a UNIQUE constraint on (user_id, idempotency_key). Add retry logic
+#   with a new idempotency key or check for existing payment first."
+#
+# Stored in: entry.llm_analysis → queryable in SQLite
+```
+
+Query enriched logs:
+```sql
+SELECT function_name, exception, llm_analysis
+FROM logs WHERE level = 'ERROR' AND llm_analysis IS NOT NULL
+ORDER BY timestamp DESC;
+```
+
+### 4. Local → HTTP → gRPC — same API, linear scaling
+
+**Stage 1: Local** — single process, SQLite:
+```python
+from nfo import configure
+configure(sinks=["sqlite:logs.db"])
+# Done. All @log_call output goes to SQLite.
+```
+
+**Stage 2: HTTP service** — multi-language, multi-container:
+```bash
+nfo serve --port 8080  # centralized service
+
+# Python, Bash, Go, Rust, Node.js — all log to one endpoint
+curl -X POST http://nfo:8080/log -d '{"cmd":"build","language":"rust"}'
+```
+
+**Stage 3: gRPC** — high-throughput, bidirectional streaming:
+```bash
+pip install nfo[grpc]
+python examples/grpc-service/server.py --port 50051
+
+# 4 RPCs: LogCall, BatchLog, StreamLog (bidirectional), QueryLogs
+# Generate clients for any language from nfo.proto
+```
+
+**Stage 4: Kubernetes** — production cluster:
+```yaml
+# One manifest, 3 replicas, persistent storage
+kubectl apply -f examples/kubernetes/
+# All pods log to nfo-logger ClusterIP service
+```
+
+No code changes between stages — same `LogEntry` schema everywhere.
+
+### 5. Composable pipeline — production-grade in one expression
+
+```python
+from nfo import EnvTagger, DiffTracker, LLMSink, SQLiteSink
+from nfo.webhook import WebhookSink
+from nfo.prometheus import PrometheusSink
+
+sink = EnvTagger(                              # ① auto-tag env/trace/version
+    DiffTracker(                               # ② detect output changes
+        LLMSink(                               # ③ LLM analysis on errors
+            model="gpt-4o-mini",
+            delegate=PrometheusSink(           # ④ metrics to Grafana
+                delegate=WebhookSink(          # ⑤ Slack alerts on ERROR
+                    url="https://hooks.slack.com/...",
+                    delegate=SQLiteSink("logs.db"),  # ⑥ persist to SQLite
+                    levels=["ERROR"],
+                ),
+                port=9090,
+            ),
+        )
+    ),
+    environment="prod",
+)
+# Result: every function call is tagged, diff-tracked, LLM-analyzed on error,
+# exported to Prometheus, alerted on Slack, and persisted to SQLite.
+```
+
+Compare this with setting up the equivalent in structlog, loguru, or stdlib — it would require dozens of files, custom handlers, and external services.
+
+---
 
 ## Features
 
@@ -390,7 +568,7 @@ services:
 Load in Bash:
 ```bash
 set -a; source .env; set +a
-python examples/http_service.py
+python examples/http-service/main.py
 ```
 
 See [`examples/.env.example`](examples/.env.example) for all available variables with descriptions.
