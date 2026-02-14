@@ -102,6 +102,26 @@ class TestLogCall:
         entry = sink.entries[0]
         assert entry.arg_types == ["int", "str", "list"]
 
+    def test_max_repr_length_truncates_serialized_values(self, logger):
+        lgr, sink = logger
+        huge = "x" * 5000
+
+        @log_call(max_repr_length=120)
+        def echo(payload):
+            return payload
+
+        echo(huge)
+        entry = sink.entries[0]
+        assert entry.args == (huge,)
+
+        serialized = entry.as_dict()
+        assert "[truncated " in serialized["args"]
+        assert "[truncated " in serialized["return_value"]
+        assert len(serialized["args"]) < 240
+
+        stdlib_msg = Logger._format_stdlib(entry)
+        assert "[truncated " in stdlib_msg
+
 
 # -- @catch -------------------------------------------------------------------
 
@@ -137,6 +157,19 @@ class TestCatch:
 
         assert ok() == 42
         assert sink.entries[0].return_value == 42
+
+    def test_max_repr_length_truncates_error_args(self, logger):
+        lgr, sink = logger
+        huge = "y" * 5000
+
+        @catch(default="fallback", max_repr_length=100)
+        def fail(payload):
+            raise RuntimeError("oops")
+
+        assert fail(huge) == "fallback"
+        serialized = sink.entries[0].as_dict()
+        assert "[truncated " in serialized["args"]
+        assert len(serialized["args"]) < 220
 
 
 # -- async support -----------------------------------------------------------

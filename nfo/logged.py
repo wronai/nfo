@@ -26,6 +26,7 @@ import functools
 from typing import Any, Callable, Optional, TypeVar, overload
 
 from nfo.decorators import log_call
+from nfo.models import DEFAULT_MAX_REPR_LENGTH
 
 C = TypeVar("C", bound=type)
 
@@ -53,9 +54,20 @@ def skip(func: Callable) -> Callable:
 def logged(cls: C) -> C: ...
 
 @overload
-def logged(*, level: str = "DEBUG", logger: Any = None) -> Callable[[C], C]: ...
+def logged(
+    *,
+    level: str = "DEBUG",
+    logger: Any = None,
+    max_repr_length: Optional[int] = DEFAULT_MAX_REPR_LENGTH,
+) -> Callable[[C], C]: ...
 
-def logged(cls: Optional[C] = None, *, level: str = "DEBUG", logger: Any = None) -> Any:
+def logged(
+    cls: Optional[C] = None,
+    *,
+    level: str = "DEBUG",
+    logger: Any = None,
+    max_repr_length: Optional[int] = DEFAULT_MAX_REPR_LENGTH,
+) -> Any:
     """
     Class decorator that auto-wraps all public methods with @log_call.
 
@@ -64,13 +76,21 @@ def logged(cls: Optional[C] = None, *, level: str = "DEBUG", logger: Any = None)
 
     Private methods (starting with ``_``) and methods marked with
     ``@nfo.skip`` are excluded.
+
+    Args:
+        max_repr_length: Maximum repr length used by sink/stdout serialization.
     """
 
     def decorator(klass: C) -> C:
         for name in list(vars(klass)):
             attr = getattr(klass, name, None)
             if _should_wrap(name, attr):
-                wrapped = log_call(attr, level=level, logger=logger)
+                wrapped = log_call(
+                    attr,
+                    level=level,
+                    logger=logger,
+                    max_repr_length=max_repr_length,
+                )
                 setattr(klass, name, wrapped)
         return klass
 

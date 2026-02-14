@@ -129,8 +129,8 @@ class LLMSink(Sink):
         parts = [
             f"Function: {entry.function_name}",
             f"Module: {entry.module}",
-            f"Args: {repr(entry.args)}",
-            f"Kwargs: {repr(entry.kwargs)}",
+            f"Args: {entry.args_repr()}",
+            f"Kwargs: {entry.kwargs_repr()}",
         ]
         if entry.exception:
             parts.append(f"Exception: {entry.exception_type}: {entry.exception}")

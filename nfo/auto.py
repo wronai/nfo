@@ -27,6 +27,7 @@ import types
 from typing import Any, Optional, Sequence, Union
 
 from nfo.decorators import log_call
+from nfo.models import DEFAULT_MAX_REPR_LENGTH
 
 
 def _should_patch(name: str, obj: Any, module_name: str, include_private: bool = False) -> bool:
@@ -61,6 +62,7 @@ def auto_log(
     default: Any = None,
     include_private: bool = False,
     logger: Any = None,
+    max_repr_length: Optional[int] = DEFAULT_MAX_REPR_LENGTH,
 ) -> int:
     """
     Automatically wrap all functions in one or more modules with logging.
@@ -78,6 +80,7 @@ def auto_log(
         default: Default return value when catch_exceptions=True and exception occurs.
         include_private: If True, also wrap functions starting with '_' (except '__dunder__').
         logger: Custom Logger instance to use.
+        max_repr_length: Maximum repr length used by sink/stdout serialization.
 
     Returns:
         Number of functions wrapped.
@@ -107,9 +110,14 @@ def auto_log(
             return 0
 
     wrapper = (
-        catch_decorator(level=level, logger=logger, default=default)
+        catch_decorator(
+            level=level,
+            logger=logger,
+            default=default,
+            max_repr_length=max_repr_length,
+        )
         if catch_exceptions
-        else log_call(level=level, logger=logger)
+        else log_call(level=level, logger=logger, max_repr_length=max_repr_length)
     )
 
     count = 0
@@ -137,6 +145,7 @@ def auto_log_by_name(
     default: Any = None,
     include_private: bool = False,
     logger: Any = None,
+    max_repr_length: Optional[int] = DEFAULT_MAX_REPR_LENGTH,
 ) -> int:
     """
     Like auto_log() but accepts module name strings instead of module objects.
@@ -161,6 +170,7 @@ def auto_log_by_name(
         default: Default return value on exception.
         include_private: Also wrap _private functions.
         logger: Custom Logger instance.
+        max_repr_length: Maximum repr length used by sink/stdout serialization.
 
     Returns:
         Total number of functions wrapped across all modules.
@@ -181,4 +191,5 @@ def auto_log_by_name(
         default=default,
         include_private=include_private,
         logger=logger,
+        max_repr_length=max_repr_length,
     )

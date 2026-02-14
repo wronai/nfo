@@ -53,6 +53,22 @@ Output (stderr):
 2026-02-11 21:59:34 | ERROR | nfo | risky() | args=(0,) | EXCEPTION ZeroDivisionError: division by zero | [0.00ms]
 ```
 
+### Safe payload truncation (large args / base64 / context blobs)
+
+To prevent huge log lines, nfo truncates serialized `repr()` output by default
+(`max_repr_length=2048`). This applies to sink output and stdlib console formatting.
+
+```python
+from nfo import log_call
+
+@log_call(level="INFO", max_repr_length=512)
+def analyze(image_b64: str, context: str):
+    ...
+```
+
+Use `max_repr_length=None` to disable truncation for a specific decorator.
+The same option is available in `@catch`, `@logged`, `auto_log()`, and `auto_log_by_name()`.
+
 ## Why nfo?
 
 ### 1. Zero boilerplate → full observability

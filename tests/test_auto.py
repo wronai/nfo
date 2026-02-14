@@ -198,6 +198,23 @@ class TestAutoLog:
         assert count == 1  # only fn, not MyClass
         lgr.close()
 
+    def test_max_repr_length_is_forwarded(self):
+        sink = MemorySink()
+        lgr = Logger(name="test-auto10", sinks=[sink], propagate_stdlib=False)
+        set_default_logger(lgr)
+
+        def echo(payload):
+            return payload
+
+        mod = _make_module("mymod10", echo=echo)
+        auto_log(mod, max_repr_length=90)
+        mod.echo("x" * 5000)
+
+        serialized = sink.entries[0].as_dict()
+        assert "[truncated " in serialized["args"]
+        assert "[truncated " in serialized["return_value"]
+        lgr.close()
+
 
 class TestAutoLogByName:
 

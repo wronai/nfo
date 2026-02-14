@@ -8,7 +8,7 @@ import time
 import traceback as tb_mod
 from typing import Any, Callable, Optional, TypeVar, overload
 
-from nfo.models import LogEntry
+from nfo.models import DEFAULT_MAX_REPR_LENGTH, LogEntry
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -55,9 +55,20 @@ def _module_of(func: Callable) -> str:
 def log_call(func: F) -> F: ...
 
 @overload
-def log_call(*, level: str = "DEBUG", logger: Any = None) -> Callable[[F], F]: ...
+def log_call(
+    *,
+    level: str = "DEBUG",
+    logger: Any = None,
+    max_repr_length: Optional[int] = DEFAULT_MAX_REPR_LENGTH,
+) -> Callable[[F], F]: ...
 
-def log_call(func: Optional[F] = None, *, level: str = "DEBUG", logger: Any = None) -> Any:
+def log_call(
+    func: Optional[F] = None,
+    *,
+    level: str = "DEBUG",
+    logger: Any = None,
+    max_repr_length: Optional[int] = DEFAULT_MAX_REPR_LENGTH,
+) -> Any:
     """
     Decorator that automatically logs function calls.
 
@@ -70,6 +81,10 @@ def log_call(func: Optional[F] = None, *, level: str = "DEBUG", logger: Any = No
     - return value and type
     - exception details + traceback on failure
     - wall-clock duration in milliseconds
+
+    Args:
+        max_repr_length: Maximum repr length used by sink/stdout serialization.
+            Set to ``None`` to disable truncation.
     """
 
     def decorator(fn: F) -> F:
@@ -94,6 +109,7 @@ def log_call(func: Optional[F] = None, *, level: str = "DEBUG", logger: Any = No
                         return_value=result,
                         return_type=type(result).__name__,
                         duration_ms=round(duration, 3),
+                        max_repr_length=max_repr_length,
                     )
                     _logger.emit(entry)
                     return result
@@ -112,6 +128,7 @@ def log_call(func: Optional[F] = None, *, level: str = "DEBUG", logger: Any = No
                         exception_type=type(exc).__name__,
                         traceback=tb_mod.format_exc(),
                         duration_ms=round(duration, 3),
+                        max_repr_length=max_repr_length,
                     )
                     _logger.emit(entry)
                     raise
@@ -137,6 +154,7 @@ def log_call(func: Optional[F] = None, *, level: str = "DEBUG", logger: Any = No
                     return_value=result,
                     return_type=type(result).__name__,
                     duration_ms=round(duration, 3),
+                    max_repr_length=max_repr_length,
                 )
                 _logger.emit(entry)
                 return result
@@ -155,6 +173,7 @@ def log_call(func: Optional[F] = None, *, level: str = "DEBUG", logger: Any = No
                     exception_type=type(exc).__name__,
                     traceback=tb_mod.format_exc(),
                     duration_ms=round(duration, 3),
+                    max_repr_length=max_repr_length,
                 )
                 _logger.emit(entry)
                 raise
@@ -174,9 +193,22 @@ def log_call(func: Optional[F] = None, *, level: str = "DEBUG", logger: Any = No
 def catch(func: F) -> F: ...
 
 @overload
-def catch(*, level: str = "DEBUG", logger: Any = None, default: Any = None) -> Callable[[F], F]: ...
+def catch(
+    *,
+    level: str = "DEBUG",
+    logger: Any = None,
+    default: Any = None,
+    max_repr_length: Optional[int] = DEFAULT_MAX_REPR_LENGTH,
+) -> Callable[[F], F]: ...
 
-def catch(func: Optional[F] = None, *, level: str = "DEBUG", logger: Any = None, default: Any = None) -> Any:
+def catch(
+    func: Optional[F] = None,
+    *,
+    level: str = "DEBUG",
+    logger: Any = None,
+    default: Any = None,
+    max_repr_length: Optional[int] = DEFAULT_MAX_REPR_LENGTH,
+) -> Any:
     """
     Decorator that logs calls **and** suppresses exceptions.
 
@@ -205,6 +237,7 @@ def catch(func: Optional[F] = None, *, level: str = "DEBUG", logger: Any = None,
                         return_value=result,
                         return_type=type(result).__name__,
                         duration_ms=round(duration, 3),
+                        max_repr_length=max_repr_length,
                     )
                     _logger.emit(entry)
                     return result
@@ -223,6 +256,7 @@ def catch(func: Optional[F] = None, *, level: str = "DEBUG", logger: Any = None,
                         exception_type=type(exc).__name__,
                         traceback=tb_mod.format_exc(),
                         duration_ms=round(duration, 3),
+                        max_repr_length=max_repr_length,
                     )
                     _logger.emit(entry)
                     return default
@@ -248,6 +282,7 @@ def catch(func: Optional[F] = None, *, level: str = "DEBUG", logger: Any = None,
                     return_value=result,
                     return_type=type(result).__name__,
                     duration_ms=round(duration, 3),
+                    max_repr_length=max_repr_length,
                 )
                 _logger.emit(entry)
                 return result
@@ -266,6 +301,7 @@ def catch(func: Optional[F] = None, *, level: str = "DEBUG", logger: Any = None,
                     exception_type=type(exc).__name__,
                     traceback=tb_mod.format_exc(),
                     duration_ms=round(duration, 3),
+                    max_repr_length=max_repr_length,
                 )
                 _logger.emit(entry)
                 return default

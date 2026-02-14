@@ -70,11 +70,11 @@ class Logger:
     def _format_stdlib(entry: LogEntry) -> str:
         parts = [f"{entry.function_name}()"]
         if entry.args:
-            parts.append(f"args={entry.args!r}")
+            parts.append(f"args={entry.args_repr()}")
         if entry.kwargs:
-            parts.append(f"kwargs={entry.kwargs!r}")
+            parts.append(f"kwargs={entry.kwargs_repr()}")
         if entry.return_value is not None:
-            parts.append(f"-> {entry.return_value!r}")
+            parts.append(f"-> {entry.return_value_repr()}")
         if entry.exception:
             parts.append(f"EXCEPTION {entry.exception_type}: {entry.exception}")
         if entry.duration_ms is not None:

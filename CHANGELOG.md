@@ -1,3 +1,47 @@
+## [0.2.6] - 2026-02-14
+
+### Summary
+
+fix(docs): CLI interface with 3 supporting modules
+
+### Docs
+
+- docs: update README
+
+### Test
+
+- update tests/test_auto.py
+- update tests/test_decorators.py
+
+### Build
+
+- update pyproject.toml
+
+### Other
+
+- update .bumpversion.cfg
+- update nfo/__init__.py
+- update nfo/auto.py
+- update nfo/decorators.py
+- update nfo/llm.py
+- update nfo/logged.py
+- update nfo/logger.py
+- update nfo/models.py
+
+
+## [0.2.5] - 2026-02-14
+
+### Fixed
+
+- **Oversized log payloads** — added bounded serialization for `args`, `kwargs`, `return_value`, and `kwarg_types` via `LogEntry.safe_repr` + `max_repr_length` (default: `2048`)
+- **Stdlib log flooding** — `Logger._format_stdlib()` now uses truncated `LogEntry` repr helpers instead of raw `!r`
+- **LLM prompt bloat** — `LLMSink` now builds prompts from truncated argument representations
+
+### Added
+
+- `max_repr_length` option for `@log_call`, `@catch`, `@logged`, `auto_log()`, and `auto_log_by_name()`
+- Regression tests for truncation paths in decorators and auto instrumentation
+
 ## [0.2.4] - 2026-02-13
 
 ### Summary
