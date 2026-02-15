@@ -1,3 +1,49 @@
+## [0.2.12] - 2026-02-15
+
+### Summary
+
+fix(docs): deep code analysis engine with 6 supporting modules
+
+### Test
+
+- update tests/test_pipeline_sink.py
+
+### Other
+
+- update nfo/__init__.py
+- update nfo/decorators.py
+- update nfo/pipeline_sink.py
+- update project.functions.toon
+- update project.toon
+
+
+## [0.3.1] - 2026-02-15
+
+### Summary
+
+feat(pipeline): PipelineSink, @decision_log, global auto_extract_meta
+
+### Added
+
+- **`PipelineSink`** (`nfo/pipeline_sink.py`) — groups LogEntry objects by
+  `pipeline_run_id` and renders pipeline ticks as box-drawing terminal blocks
+  with step timings, metrics, decisions, costs, and error context.
+- **`@decision_log`** decorator (`nfo/decorators.py`) — logs conditional
+  decisions with structured `decision`/`reason` fields in `entry.extra`.
+- **Global `auto_extract_meta`** — `_maybe_extract()` in decorators now
+  falls back to the global `auto_extract_meta` flag from `configure()`,
+  so all `@log_call` sites automatically extract metadata for large args
+  without per-decorator changes.
+- `get_global_auto_extract_meta()` in `nfo/configure.py`.
+- Exports: `PipelineSink`, `decision_log` added to `__init__.py` and `__all__`.
+
+### Test
+
+- 23 new tests in `tests/test_pipeline_sink.py` (basic, rendering, color,
+  timeout, multi-run, footer, delegate).
+- Full suite: 296 passed.
+
+
 ## [0.2.11] - 2026-02-15
 
 ### Summary

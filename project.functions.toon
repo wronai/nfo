@@ -1,6 +1,6 @@
 project: nfo
-generated: "2026-02-15T09:48:42.619106"
-modules[65]{path,lang,items}:
+generated: "2026-02-15T10:43:53.391693"
+modules[67]{path,lang,items}:
   demo/app.py,python,13
   demo/load_generator.py,python,2
   tests/test_prometheus.py,python,10
@@ -14,6 +14,7 @@ modules[65]{path,lang,items}:
   tests/__init__.py,python,0
   tests/test_json_sink.py,python,10
   tests/test_configure.py,python,24
+  tests/test_pipeline_sink.py,python,29
   tests/test_sinks.py,python,7
   tests/test_terminal.py,python,30
   tests/test_meta.py,python,20
@@ -24,7 +25,7 @@ modules[65]{path,lang,items}:
   tools/sync_pactown_com_dependency.py,python,0
   nfo/auto.py,python,3
   nfo/llm.py,python,8
-  nfo/configure.py,python,5
+  nfo/configure.py,python,6
   nfo/extractors.py,python,10
   nfo/webhook.py,python,5
   nfo/buffered_sink.py,python,7
@@ -35,7 +36,8 @@ modules[65]{path,lang,items}:
   nfo/meta.py,python,3
   nfo/binary_router.py,python,4
   nfo/models.py,python,7
-  nfo/decorators.py,python,12
+  nfo/pipeline_sink.py,python,19
+  nfo/decorators.py,python,14
   nfo/terminal.py,python,9
   nfo/env.py,python,14
   nfo/meta_decorators.py,python,5
@@ -298,6 +300,37 @@ function_details:
       TestStdlibBridge.test_bridge_multiple_loggers,method,(),246-275,false,30,3,checks bridge multiple loggers
       TestStdlibBridge.test_bridge_no_duplicate_from_child_propagation,method,(),277-306,false,30,3,"When both parent and child loggers are in the bridge list,"
       TestStdlibBridge.test_bridge_exception_info,method,(),308-329,false,22,2,checks bridge exception info
+  tests/test_pipeline_sink.py:
+    functions[29]{name,kind,sig,loc,async,lines,cc,does}:
+      _make_entry,function,"(function_name='test_fn', level='INFO', duration_ms=None, exception=None, exception_type=None, extra=None)",29-50,false,22,2,creates entry
+      _step_entry,function,"(run_id, step_name, duration_ms=10.0)",53-65,false,13,1,Create a pipeline step entry.
+      _completion_entry,function,"(run_id, total_ms=100.0, total_cost=0.0, total_steps=3)",68-79,false,12,1,Create a pipeline completion marker entry.
+      MemorySink.__init__,method,(),19-20,false,2,1,creates
+      MemorySink.write,method,"(entry:LogEntry)",22-23,false,2,1,logs
+      MemorySink.close,method,(),25-26,false,2,1,stops
+      TestPipelineSinkBasic.test_non_pipeline_entry_passes_through,method,(),88-94,false,7,1,checks non pipeline entry passes through
+      TestPipelineSinkBasic.test_non_pipeline_entry_no_delegate,method,(),96-100,false,5,1,checks non pipeline entry no delegate
+      TestPipelineSinkBasic.test_pipeline_entry_buffered_until_complete,method,(),102-107,false,6,1,checks pipeline entry buffered until complete
+      TestPipelineSinkBasic.test_complete_marker_flushes_run,method,(),109-122,false,14,1,checks complete marker flushes run
+      TestPipelineSinkBasic.test_tick_counter_increments,method,(),124-134,false,11,1,checks tick counter increments
+      TestPipelineSinkRendering.test_box_drawing_chars_present,method,(),139-151,false,13,1,checks box drawing chars present
+      TestPipelineSinkRendering.test_step_with_error_shows_fail_icon,method,(),153-170,false,18,1,checks step with error shows fail icon
+      TestPipelineSinkRendering.test_skipped_step_shows_skip_icon,method,(),172-182,false,11,2,checks skipped step shows skip icon
+      TestPipelineSinkRendering.test_step_metrics_displayed,method,(),184-194,false,11,1,checks step metrics displayed
+      TestPipelineSinkRendering.test_cost_in_footer,method,(),196-202,false,7,1,checks cost in footer
+      TestPipelineSinkRendering.test_duration_in_footer,method,(),204-210,false,7,1,checks duration in footer
+      TestPipelineSinkRendering.test_decision_sub_line,method,(),212-224,false,13,1,checks decision sub line
+      TestPipelineSinkRendering.test_tokens_sub_line,method,(),226-236,false,11,1,checks tokens sub line
+      TestPipelineSinkRendering.test_ocr_sub_line,method,(),238-249,false,12,1,checks ocr sub line
+      TestPipelineSinkColor.test_color_enabled_has_ansi,method,(),254-260,false,7,1,checks color enabled has ansi
+      TestPipelineSinkColor.test_color_disabled_no_ansi,method,(),262-268,false,7,1,checks color disabled no ansi
+      TestPipelineSinkTimeout.test_stale_buffer_flushed,method,(),273-282,false,10,1,checks stale buffer flushed
+      TestPipelineSinkTimeout.test_close_flushes_all,method,(),284-293,false,10,1,checks close flushes all
+      TestPipelineSinkMultipleRuns.test_independent_runs,method,(),298-315,false,18,1,checks independent runs
+      TestPipelineSinkFooter.test_error_count_in_footer,method,(),320-334,false,15,1,checks error count in footer
+      TestPipelineSinkFooter.test_steps_count_in_footer,method,(),336-344,false,9,1,checks steps count in footer
+      TestPipelineSinkDelegate.test_close_calls_delegate_close,method,(),349-353,false,5,1,checks close calls delegate close
+      TestPipelineSinkDelegate.test_delegate_receives_non_pipeline_entries,method,(),355-367,false,13,1,checks delegate receives non pipeline entries
   tests/test_sinks.py:
     functions[7]{name,kind,sig,loc,async,lines,cc,does}:
       _make_entry,function,() -> LogEntry,14-29,false,16,1,creates entry
@@ -363,22 +396,22 @@ function_details:
       TestSizeof.test_fallback_negative,method,(),99-103,false,5,1,checks fallback negative
   tests/test_click_integration.py:
     functions[16]{name,kind,sig,loc,async,lines,cc,does}:
-      TestNfoGroup.test_group_logs_command,method,(),20-46,false,27,1,NfoGroup should emit a log entry when a command completes.
-      TestNfoGroup.test_group_logs_error,method,(),48-73,false,26,3,NfoGroup should log ERROR when a command raises.
-      TestNfoGroup.test_group_duration_recorded,method,(),75-98,false,24,1,Duration should be recorded in the log entry.
-      TestNfoGroup.test_group_filters_nfo_params,method,(),100-125,false,26,3,nfo_* params should not appear in logged kwargs.
-      TestNfoCommand.test_command_logs_invocation,method,(),134-156,false,23,1,NfoCommand should log its own invocation.
-      TestNfoCommand.test_command_logs_error,method,(),158-182,false,25,3,NfoCommand should log ERROR on exception.
-      TestNfoOptions.test_adds_three_options,method,(),191-206,false,16,1,"nfo_options should add --nfo-sink, --nfo-format, --nfo-level."
-      TestNfoOptions.test_defaults,method,(),208-219,false,12,1,"Defaults: empty sink, color format, DEBUG level."
-      TestNfoOptions.test_format_choices,method,(),221-231,false,11,1,Invalid format should be rejected.
-      TestNfoOptions.test_level_choices,method,(),233-243,false,11,1,Invalid level should be rejected.
-      TestConfigureTerminalSpec.test_parse_terminal_color,method,(),252-256,false,5,1,checks parse terminal color
-      TestConfigureTerminalSpec.test_parse_terminal_markdown,method,(),258-262,false,5,1,checks parse terminal markdown
-      TestConfigureTerminalSpec.test_parse_terminal_toon,method,(),264-268,false,5,1,checks parse terminal toon
-      TestConfigureTerminalSpec.test_parse_terminal_table,method,(),270-274,false,5,1,checks parse terminal table
-      TestConfigureTerminalSpec.test_parse_terminal_ascii,method,(),276-280,false,5,1,checks parse terminal ascii
-      TestConfigureTerminalSpec.test_parse_terminal_unknown_defaults_to_color,method,(),282-286,false,5,1,checks parse terminal unknown defaults to color
+      TestNfoGroup.test_group_logs_command,method,(),21-47,false,27,1,NfoGroup should emit a log entry when a command completes.
+      TestNfoGroup.test_group_logs_error,method,(),49-74,false,26,3,NfoGroup should log ERROR when a command raises.
+      TestNfoGroup.test_group_duration_recorded,method,(),76-99,false,24,1,Duration should be recorded in the log entry.
+      TestNfoGroup.test_group_filters_nfo_params,method,(),101-126,false,26,3,nfo_* params should not appear in logged kwargs.
+      TestNfoCommand.test_command_logs_invocation,method,(),135-157,false,23,1,NfoCommand should log its own invocation.
+      TestNfoCommand.test_command_logs_error,method,(),159-183,false,25,3,NfoCommand should log ERROR on exception.
+      TestNfoOptions.test_adds_three_options,method,(),192-207,false,16,1,"nfo_options should add --nfo-sink, --nfo-format, --nfo-level."
+      TestNfoOptions.test_defaults,method,(),209-220,false,12,1,"Defaults: empty sink, color format, DEBUG level."
+      TestNfoOptions.test_format_choices,method,(),222-232,false,11,1,Invalid format should be rejected.
+      TestNfoOptions.test_level_choices,method,(),234-244,false,11,1,Invalid level should be rejected.
+      TestConfigureTerminalSpec.test_parse_terminal_color,method,(),253-257,false,5,1,checks parse terminal color
+      TestConfigureTerminalSpec.test_parse_terminal_markdown,method,(),259-263,false,5,1,checks parse terminal markdown
+      TestConfigureTerminalSpec.test_parse_terminal_toon,method,(),265-269,false,5,1,checks parse terminal toon
+      TestConfigureTerminalSpec.test_parse_terminal_table,method,(),271-275,false,5,1,checks parse terminal table
+      TestConfigureTerminalSpec.test_parse_terminal_ascii,method,(),277-281,false,5,1,checks parse terminal ascii
+      TestConfigureTerminalSpec.test_parse_terminal_unknown_defaults_to_color,method,(),283-287,false,5,1,checks parse terminal unknown defaults to color
   tests/test_webhook.py:
     functions[11]{name,kind,sig,loc,async,lines,cc,does}:
       _make_entry,function,(),14-32,false,19,1,creates entry
@@ -459,12 +492,13 @@ function_details:
       LLMSink.write,method,"(entry:LogEntry) -> None",189-194,false,6,2,logs
       LLMSink.close,method,() -> None,196-198,false,3,2,stops
   nfo/configure.py:
-    functions[5]{name,kind,sig,loc,async,lines,cc,does}:
-      get_global_meta_policy,function,"() -> Optional[Any]",26-28,false,3,1,"Return the globally configured :class:`~nfo.meta.ThresholdPolicy` (if any)."
-      _parse_sink_spec,function,"(spec:str) -> Sink",31-62,false,32,10,"Parse a sink specification string like 'sqlite:logs.db' or 'csv:logs.csv'."
-      configure,function,() -> Logger,114-321,false,208,36,Configure nfo logging for the entire project.
-      _StdlibBridge.__init__,method,"(nfo_logger:Logger) -> None",75-77,false,3,1,creates
-      _StdlibBridge.emit,method,"(record:Any) -> None",79-111,false,33,13,sends
+    functions[6]{name,kind,sig,loc,async,lines,cc,does}:
+      get_global_meta_policy,function,"() -> Optional[Any]",27-29,false,3,1,"Return the globally configured :class:`~nfo.meta.ThresholdPolicy` (if any)."
+      get_global_auto_extract_meta,function,() -> bool,32-34,false,3,1,"Return ``True`` if ``auto_extract_meta`` was enabled via :func:`configure`."
+      _parse_sink_spec,function,"(spec:str) -> Sink",37-68,false,32,10,"Parse a sink specification string like 'sqlite:logs.db' or 'csv:logs.csv'."
+      configure,function,() -> Logger,120-328,false,209,36,Configure nfo logging for the entire project.
+      _StdlibBridge.__init__,method,"(nfo_logger:Logger) -> None",81-83,false,3,1,creates
+      _StdlibBridge.emit,method,"(record:Any) -> None",85-117,false,33,13,sends
   nfo/extractors.py:
     functions[10]{name,kind,sig,loc,async,lines,cc,does}:
       detect_format,function,"(data:bytes) -> Optional[str]",39-44,false,6,3,Detect file format from magic bytes.
@@ -495,8 +529,8 @@ function_details:
       AsyncBufferedSink._do_flush,method,() -> None,95-105,false,11,4,do flush
   nfo/__init__.py:
     functions[2]{name,kind,sig,loc,async,lines,cc,does}:
-      _lazy_click,function,(),26-28,false,3,1,lazy click
-      __getattr__,function,"(name:str)",31-38,false,8,3,getattr
+      _lazy_click,function,(),27-29,false,3,1,lazy click
+      __getattr__,function,"(name:str)",32-39,false,8,3,getattr
   nfo/ring_buffer_sink.py:
     functions[6]{name,kind,sig,loc,async,lines,cc,does}:
       RingBufferSink.__init__,method,"(delegate:Sink, capacity:int=1000, trigger_levels:Optional[Sequence[str]]=None, include_trigger:bool=True) -> None",30-44,false,15,3,creates
@@ -536,20 +570,43 @@ function_details:
       LogEntry.kwargs_repr,method,() -> str,64-65,false,2,1,kwargs repr
       LogEntry.return_value_repr,method,() -> str,67-68,false,2,1,return value repr
       LogEntry.as_dict,method,"() -> Dict[str, Any]",70-91,false,22,9,Convert to a flat dictionary suitable for serialization.
+  nfo/pipeline_sink.py:
+    functions[19]{name,kind,sig,loc,async,lines,cc,does}:
+      PipelineSink.__init__,method,"(delegate:Optional[Sink]=None, stream:Optional[TextIO]=None, width:int=72, buffer_timeout:float=10.0, color:bool=True, tick_counter:int=0)",63-84,false,22,2,creates
+      PipelineSink.tick_count,method,() -> int,89-91,false,3,1,Number of completed ticks rendered so far.
+      PipelineSink.pending_runs,method,() -> int,94-96,false,3,1,Number of pipeline runs currently buffered.
+      PipelineSink.session_cost,method,() -> float,99-101,false,3,1,Total cost across all rendered ticks.
+      PipelineSink.write,method,"(entry:LogEntry) -> None",105-121,false,17,5,logs
+      PipelineSink.close,method,() -> None,123-129,false,7,3,stops
+      PipelineSink._flush_stale,method,() -> None,133-141,false,9,4,Flush runs older than buffer_timeout (called under lock).
+      PipelineSink._flush_run,method,"(run_id:str) -> None",143-166,false,24,7,Render and output a completed pipeline run (called under lock).
+      PipelineSink._c,method,"(code:str, text:str) -> str",170-174,false,5,2,Apply ANSI color if enabled.
+      PipelineSink._render_block,method,"(run_id:str, entries:List[LogEntry]) -> str",176-227,false,52,8,Render a full pipeline tick block.
+      PipelineSink._render_step,method,"(entry:LogEntry, width:int) -> str",229-268,false,40,13,Render a single step line.
+      PipelineSink._step_summary,method,"(entry:LogEntry) -> str",270-295,false,26,7,Extract a short summary string from entry extra fields.
+      PipelineSink._format_metric,method,"(key:str, val:Any) -> str",297-319,false,23,2,Format a single metric for display.
+      PipelineSink._render_sub_lines,method,"(entry:LogEntry, width:int) -> List[str]",321-358,false,38,11,Render sub-lines for decisions and annotations.
+      PipelineSink._render_footer,method,"(completion:Optional[LogEntry], steps:List[LogEntry], width:int) -> str",360-393,false,34,12,Render the summary footer line.
+      PipelineSink._render_data_flow,method,"(steps:List[LogEntry], width:int) -> str",397-418,false,22,10,Render a data flow summary showing sizes at key steps.
+      PipelineSink._render_cost_line,method,"(width:int) -> str",420-431,false,12,4,Render rolling cost summary if any cost was tracked.
+      PipelineSink._visible_len,method,"(text:str) -> int",434-437,false,4,1,Length of text excluding ANSI escape sequences.
+      PipelineSink._ansi_pad,method,"(text:str) -> int",439-441,false,3,1,Extra characters added by ANSI codes (for padding calculations).
   nfo/decorators.py:
-    functions[12]{name,kind,sig,loc,async,lines,cc,does}:
+    functions[14]{name,kind,sig,loc,async,lines,cc,does}:
       _get_default_logger,function,() -> Any,23-28,false,6,2,retrieves default logger
       set_default_logger,function,"(logger:Any) -> None",31-34,false,4,1,Replace the module-level default logger used by decorators.
       _arg_types,function,"(args:tuple, kwargs:dict) -> tuple",41-44,false,4,3,arg types
       _module_of,function,"(func:Callable) -> str",47-48,false,2,2,module of
       _should_sample,function,"(sample_rate:Optional[float]) -> bool",51-62,false,12,4,Return True if this call should be logged based on *sample_rate*.
-      _maybe_extract,function,"(args:tuple, kwargs:dict, result:Any, extract_meta_flag:bool, meta_policy:Any) -> Optional[Dict[str, Any]]",65-107,false,43,13,Build ``extra`` dict with metadata when *extract_meta_flag* is True.
-      log_call,function,"(func:F) -> F",115-115,false,1,1,logs call
-      log_call,function,"() -> Callable[[F], F]",118-126,false,9,1,logs call
-      log_call,function,"(func:Optional[F]=None) -> Any",128-274,false,147,2,Decorator that automatically logs function calls.
-      catch,function,"(func:F) -> F",282-282,false,1,1,catch
-      catch,function,"() -> Callable[[F], F]",285-294,false,10,1,catch
-      catch,function,"(func:Optional[F]=None) -> Any",296-424,false,129,2,Decorator that logs calls **and** suppresses exceptions.
+      _maybe_extract,function,"(args:tuple, kwargs:dict, result:Any, extract_meta_flag:bool, meta_policy:Any) -> Optional[Dict[str, Any]]",65-117,false,53,15,Build ``extra`` dict with metadata when *extract_meta_flag* is True.
+      log_call,function,"(func:F) -> F",125-125,false,1,1,logs call
+      log_call,function,"() -> Callable[[F], F]",128-136,false,9,1,logs call
+      log_call,function,"(func:Optional[F]=None) -> Any",138-284,false,147,2,Decorator that automatically logs function calls.
+      catch,function,"(func:F) -> F",292-292,false,1,1,catch
+      catch,function,"() -> Callable[[F], F]",295-304,false,10,1,catch
+      catch,function,"(func:Optional[F]=None) -> Any",306-434,false,129,2,Decorator that logs calls **and** suppresses exceptions.
+      decision_log,function,"(func:Optional[Callable]=None) -> Any",441-571,false,131,2,Decorator that logs decision outcomes with structured reasons.
+      _build_decision_extra,function,"(decision_name:str, result:Any) -> Dict[str, Any]",574-589,false,16,6,Extract decision/reason from the function return value.
   nfo/terminal.py:
     functions[9]{name,kind,sig,loc,async,lines,cc,does}:
       TerminalSink.__init__,method,"(format:str='color', stream:Optional[TextIO]=None, show_args:bool=True, show_return:bool=True, show_duration:bool=True, show_traceback:bool=True, max_width:int=120)",35-54,false,20,2,creates

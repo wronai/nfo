@@ -4,7 +4,7 @@ nfo — Automatic function logging with decorators.
 Output to SQLite, CSV, and Markdown.
 """
 
-from nfo.decorators import log_call, catch
+from nfo.decorators import log_call, catch, decision_log
 from nfo.logger import Logger
 from nfo.sinks import SQLiteSink, CSVSink, MarkdownSink
 from nfo.configure import configure
@@ -21,6 +21,7 @@ from nfo.binary_router import BinaryAwareRouter
 from nfo.buffered_sink import AsyncBufferedSink
 from nfo.ring_buffer_sink import RingBufferSink
 from nfo.terminal import TerminalSink
+from nfo.pipeline_sink import PipelineSink
 
 # Lazy import for optional click dependency
 def _lazy_click():
@@ -68,6 +69,8 @@ __all__ = [
     "AsyncBufferedSink",
     "RingBufferSink",
     "TerminalSink",
+    "PipelineSink",
+    "decision_log",
     "NfoGroup",
     "NfoCommand",
     "nfo_options",
