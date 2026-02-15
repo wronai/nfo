@@ -1,3 +1,15 @@
+## [0.2.13] - 2026-02-15
+
+### Summary
+
+feat(tests): deep code analysis engine
+
+### Test
+
+- update tests/test_decision_log.py
+- update tests/test_pipeline_sink.py
+
+
 ## [0.2.12] - 2026-02-15
 
 ### Summary

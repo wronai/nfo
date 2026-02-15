@@ -344,6 +344,97 @@ class TestPipelineSinkFooter:
         assert "3/3 steps" in output
 
 
+class TestPipelineSinkDataFlow:
+
+    def test_data_flow_shown_when_size_present(self):
+        buf = io.StringIO()
+        sink = PipelineSink(stream=buf, color=False, width=72)
+        sink.write(_step_entry("run1", "capture_screen", duration_ms=45.0, data_size_kb=64))
+        sink.write(_step_entry("run1", "build_context", duration_ms=5.0, context_length=1200))
+        sink.write(_step_entry(
+            "run1", "analyze", duration_ms=890.0,
+            tokens_in=1200, tokens_out=350,
+        ))
+        sink.write(_completion_entry("run1"))
+        output = buf.getvalue()
+        assert "DATA" in output
+        assert "capture_screen:64KB" in output
+        assert "ctx:1200ch" in output
+        assert "llm:1200→350tok" in output
+
+    def test_data_flow_hidden_when_no_sizes(self):
+        buf = io.StringIO()
+        sink = PipelineSink(stream=buf, color=False, width=72)
+        sink.write(_step_entry("run1", "StepA", duration_ms=10.0))
+        sink.write(_completion_entry("run1"))
+        output = buf.getvalue()
+        assert "DATA" not in output
+
+    def test_data_flow_arrows_separate_parts(self):
+        buf = io.StringIO()
+        sink = PipelineSink(stream=buf, color=False, width=72)
+        sink.write(_step_entry("run1", "capture_screen", duration_ms=45.0, data_size_kb=64))
+        sink.write(_step_entry("run1", "build_context", duration_ms=5.0, context_length=800))
+        sink.write(_completion_entry("run1"))
+        output = buf.getvalue()
+        assert "→" in output  # arrow between flow parts
+
+
+class TestPipelineSinkRollingCost:
+
+    def test_session_cost_tracks_across_ticks(self):
+        buf = io.StringIO()
+        sink = PipelineSink(stream=buf, color=False, width=72)
+        sink.write(_step_entry("r1", "Analyze", duration_ms=890.0, cost_usd=0.0023))
+        sink.write(_completion_entry("r1", total_ms=900.0, total_cost=0.0023))
+        assert sink.session_cost == pytest.approx(0.0023)
+
+        sink.write(_step_entry("r2", "Analyze", duration_ms=700.0, cost_usd=0.0015))
+        sink.write(_completion_entry("r2", total_ms=710.0, total_cost=0.0015))
+        assert sink.session_cost == pytest.approx(0.0038)
+
+    def test_cost_line_shown_when_cost_exists(self):
+        buf = io.StringIO()
+        sink = PipelineSink(stream=buf, color=False, width=72)
+        sink.write(_step_entry("r1", "Analyze", cost_usd=0.005))
+        sink.write(_completion_entry("r1", total_cost=0.005))
+        output = buf.getvalue()
+        assert "COST" in output
+        assert "Session:" in output
+        assert "$0.005" in output
+
+    def test_cost_line_hidden_when_zero(self):
+        buf = io.StringIO()
+        sink = PipelineSink(stream=buf, color=False, width=72)
+        sink.write(_step_entry("r1", "StepA", duration_ms=10.0))
+        sink.write(_completion_entry("r1", total_cost=0.0))
+        output = buf.getvalue()
+        assert "COST" not in output
+
+    def test_avg_per_tick_shown(self):
+        buf = io.StringIO()
+        sink = PipelineSink(stream=buf, color=False, width=72)
+        for i, cost in enumerate([0.002, 0.004, 0.006]):
+            rid = f"r{i}"
+            sink.write(_step_entry(rid, "Analyze", cost_usd=cost))
+            sink.write(_completion_entry(rid, total_cost=cost))
+        output = buf.getvalue()
+        assert "avg/tick:" in output
+
+    def test_session_cost_zero_initially(self):
+        sink = PipelineSink(color=False)
+        assert sink.session_cost == 0.0
+
+    def test_cost_from_step_extra_when_completion_has_zero(self):
+        """If completion total_cost is 0, fall back to summing step cost_usd."""
+        buf = io.StringIO()
+        sink = PipelineSink(stream=buf, color=False, width=72)
+        sink.write(_step_entry("r1", "Analyze", cost_usd=0.003))
+        sink.write(_completion_entry("r1", total_cost=0.0))
+        # cost_usd from step should be summed
+        assert sink.session_cost == pytest.approx(0.003)
+
+
 class TestPipelineSinkDelegate:
 
     def test_close_calls_delegate_close(self):
