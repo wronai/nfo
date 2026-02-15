@@ -1,3 +1,23 @@
+## [0.2.10] - 2026-02-15
+
+### Summary
+
+refactor(config): CLI interface improvements
+
+### Test
+
+- update tests/test_click_integration.py
+
+### Build
+
+- update pyproject.toml
+
+### Other
+
+- update project.functions.toon
+- update project.toon
+
+
 ## [0.2.9] - 2026-02-15
 
 ### Summary

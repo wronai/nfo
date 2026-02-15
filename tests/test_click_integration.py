@@ -2,11 +2,12 @@
 
 import io
 
-import click
 import pytest
-from click.testing import CliRunner
 
-from nfo.click import NfoGroup, NfoCommand, nfo_options
+click = pytest.importorskip("click", reason="click not installed (optional dependency)")
+from click.testing import CliRunner  # noqa: E402
+
+from nfo.click import NfoGroup, NfoCommand, nfo_options  # noqa: E402
 from nfo.terminal import TerminalSink
 from nfo.logger import Logger
 

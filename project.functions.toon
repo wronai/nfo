@@ -1,5 +1,5 @@
 project: nfo
-generated: "2026-02-15T09:43:36.947102"
+generated: "2026-02-15T09:48:42.619106"
 modules[65]{path,lang,items}:
   demo/app.py,python,13
   demo/load_generator.py,python,2
