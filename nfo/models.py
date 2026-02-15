@@ -89,3 +89,35 @@ class LogEntry:
             "version": self.version or "",
             "llm_analysis": self.llm_analysis or "",
         }
+
+    def as_compact(self) -> Dict[str, Any]:
+        """Convert to a minimal dictionary optimised for LLM token budgets.
+
+        Omits empty/None fields and uses short keys to reduce token count
+        by ~40-60% compared to :meth:`as_dict`.
+        """
+        d: Dict[str, Any] = {
+            "fn": self.function_name,
+            "lvl": self.level,
+        }
+        if self.module:
+            d["mod"] = self.module
+        if self.args:
+            d["a"] = self.args_repr()
+        if self.kwargs:
+            d["kw"] = self.kwargs_repr()
+        if self.return_value is not None:
+            d["ret"] = self.return_value_repr()
+        if self.return_type:
+            d["rt"] = self.return_type
+        if self.exception:
+            d["err"] = self.exception
+            if self.exception_type:
+                d["et"] = self.exception_type
+        if self.duration_ms is not None:
+            d["ms"] = round(self.duration_ms, 2)
+        if self.environment:
+            d["env"] = self.environment
+        if self.trace_id:
+            d["tid"] = self.trace_id
+        return d

@@ -40,15 +40,17 @@ class JSONSink(Sink):
         file_path: str | Path = "logs.jsonl",
         *,
         pretty: bool = False,
+        compact: bool = False,
         delegate: Optional[Sink] = None,
     ) -> None:
         self.file_path = str(file_path)
         self.pretty = pretty
+        self.compact = compact
         self.delegate = delegate
         self._lock = threading.Lock()
 
     def write(self, entry: LogEntry) -> None:
-        d = entry.as_dict()
+        d = entry.as_compact() if self.compact else entry.as_dict()
         # Add extra fields if present
         if entry.extra:
             d["extra"] = {k: repr(v) if not isinstance(v, (str, int, float, bool, type(None))) else v
