@@ -1,3 +1,18 @@
+## [0.2.8] - 2026-02-15
+
+### Summary
+
+feat(docs): docs module improvements
+
+### Docs
+
+- docs: update README
+
+### Build
+
+- update pyproject.toml
+
+
 ## [0.2.7] - 2026-02-15
 
 ### Summary

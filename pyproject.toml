@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nfo"
-version = "0.2.7"
+version = "0.2.8"
 description = "Automatic function logging with decorators — output to SQLite, CSV, Markdown + LLM-powered log analysis"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.9"
 authors = [
-    {name = "wronai"},
+    {name = "Tom Sapletta", email = "info@softreck.com"},
 ]
 keywords = ["logging", "decorator", "sqlite", "csv", "markdown", "auto-logging", "llm", "litellm", "prometheus", "grafana", "webhook", "devops"]
 classifiers = [

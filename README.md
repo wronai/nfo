@@ -948,3 +948,7 @@ pytest tests/ -v
 ## License
 
 [Apache-2.0](LICENSE)
+
+## Author
+
+Created by **Tom Sapletta** - [info@softreck.com](mailto:info@softreck.com)
