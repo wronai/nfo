@@ -911,13 +911,29 @@ python -m nfo logs
 
 ## Roadmap (v0.3.x)
 
-See [`TODO.md`](TODO.md) for the full roadmap. Current: **v0.2.3** — 114 tests, 7 sinks, CLI, HTTP + gRPC services, multi-language support. Planned:
+See [`TODO.md`](TODO.md) for the full roadmap. Current: **v0.2.6** — 46 modules, 448 functions, 114 tests, 7 sinks, CLI, HTTP + gRPC services, multi-language support. Planned:
 
 - **`OTELSink`** — OpenTelemetry spans for distributed tracing (Jaeger/Zipkin)
 - **`ElasticsearchSink`** — direct Elasticsearch indexing
 - **Web Dashboard** — `nfo dashboard --db logs.db` (interactive browser UI)
 - **`replay_logs()`** — replay function calls from logs for regression testing
-- **Log rotation** — for CSV, Markdown, JSON sinks
+
+## Project Metrics
+
+- **46 modules** across core, tests, examples, and demo
+- **448 total functions** with comprehensive metadata tracking
+- **114 tests** with full coverage of all sinks and decorators
+- **7 sink types**: SQLite, CSV, Markdown, JSON, Prometheus, Webhook, LLM
+- **Multi-language support**: Python (core), Go, Rust, Bash clients
+- **DevOps ready**: Docker Compose, Kubernetes, gRPC, HTTP services
+
+## Documentation
+
+- **[Project Analysis](docs/project-analysis.md)** - Comprehensive architecture and scale analysis
+- **[Function Reference](docs/function-reference.md)** - Complete API reference for all functions
+- **[Examples Guide](examples/)** - Working examples and integration patterns
+- **[TODO.md](TODO.md)** - Development roadmap and planned features
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
 
 ## Development
 

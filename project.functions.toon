@@ -1,0 +1,452 @@
+project: nfo
+generated: "2026-02-15T08:33:20.995003"
+modules[46]{path,lang,items}:
+  demo/app.py,python,13
+  demo/load_generator.py,python,2
+  tests/test_prometheus.py,python,10
+  tests/test_auto.py,python,17
+  tests/test_env.py,python,23
+  tests/test_llm.py,python,19
+  tests/__init__.py,python,0
+  tests/test_json_sink.py,python,10
+  tests/test_configure.py,python,24
+  tests/test_sinks.py,python,7
+  tests/test_webhook.py,python,11
+  tests/test_decorators.py,python,21
+  tools/sync_pactown_com_dependency.py,python,0
+  nfo/auto.py,python,3
+  nfo/llm.py,python,8
+  nfo/configure.py,python,4
+  nfo/webhook.py,python,5
+  nfo/__init__.py,python,1
+  nfo/setup.py,python,0
+  nfo/__main__.py,python,9
+  nfo/models.py,python,7
+  nfo/decorators.py,python,10
+  nfo/env.py,python,14
+  nfo/prometheus.py,python,5
+  nfo/logged.py,python,5
+  nfo/json_sink.py,python,3
+  nfo/logger.py,python,6
+  nfo/sinks.py,python,15
+  examples/http-service/main.py,python,5
+  examples/auto-log/main.py,python,5
+  examples/bash-wrapper/main.py,python,3
+  examples/sqlite-sink/main.py,python,3
+  examples/go-client/main.go,go,5
+  examples/configure/main.py,python,4
+  examples/rust-client/main.rs,rust,0
+  examples/basic-usage/main.py,python,3
+  examples/markdown-sink/main.py,python,3
+  examples/csv-sink/main.py,python,3
+  examples/grpc-service/server.py,python,6
+  examples/grpc-service/client.py,python,1
+  examples/grpc-service/nfo_pb2_grpc.py,python,10
+  examples/grpc-service/nfo_pb2.py,python,0
+  examples/multi-sink/main.py,python,4
+  examples/env-tagger/main.py,python,3
+  examples/env-config/main.py,python,4
+  examples/async-usage/main.py,python,5
+
+function_details:
+  demo/app.py:
+    functions[13]{name,kind,sig,loc,async,lines,cc,does}:
+      compute_fibonacci,function,"(n:int) -> int",99-106,false,8,3,Compute fibonacci number (intentionally slow for large n).
+      process_order,function,"(order_id:str, amount:float) -> dict",110-113,false,4,1,Simulate order processing.
+      risky_division,function,"(a:float, b:float) -> float",117-119,false,3,1,Division that may fail.
+      slow_operation,function,"(duration:float) -> str",123-126,false,4,1,Simulate a slow operation.
+      health,function,(),151-152,false,2,1,health
+      demo_success,function,(),156-165,false,10,1,Run several successful decorated function calls.
+      demo_error,function,(),169-179,false,11,2,Trigger error-level log entries.
+      demo_slow,function,(),183-187,false,5,1,Trigger a slow operation to demonstrate duration histograms.
+      demo_batch,function,(),191-213,false,23,6,Run a batch of mixed calls (success + errors) for load simulation.
+      metrics,function,(),217-222,false,6,1,Expose Prometheus metrics (alternative to prom_sink auto-server).
+      browse_logs,function,"(level:str='', limit:int=50)",226-244,false,19,3,Browse latest logs from SQLite.
+      UserService.create_user,method,"(name:str, email:str) -> dict",131-133,false,3,1,creates user
+      UserService.delete_user,method,"(user_id:int) -> bool",135-138,false,4,2,deletes user
+  demo/load_generator.py:
+    functions[2]{name,kind,sig,loc,async,lines,cc,does}:
+      weighted_choice,function,(endpoints),24-32,false,9,4,weighted choice
+      main,function,(),35-59,false,25,5,main
+  tests/test_prometheus.py:
+    functions[10]{name,kind,sig,loc,async,lines,cc,does}:
+      _make_entry,function,(),13-28,false,16,1,creates entry
+      TestPrometheusSink.test_increments_call_counter,method,(),33-38,false,6,1,checks increments call counter
+      TestPrometheusSink.test_increments_error_counter,method,(),40-44,false,5,1,checks increments error counter
+      TestPrometheusSink.test_records_duration_histogram,method,(),46-50,false,5,1,checks records duration histogram
+      TestPrometheusSink.test_no_duration_when_none,method,(),52-58,false,7,1,checks no duration when none
+      TestPrometheusSink.test_delegates_to_downstream,method,(),60-73,false,14,1,checks delegates to downstream
+      TestPrometheusSink.test_close_delegates,method,(),75-86,false,12,1,checks close delegates
+      TestPrometheusSink.test_custom_prefix,method,(),88-93,false,6,1,checks custom prefix
+      TestPrometheusSink.test_multiple_functions,method,(),95-102,false,8,1,checks multiple functions
+      TestPrometheusSink.test_get_metrics_returns_bytes,method,(),104-109,false,6,1,checks get metrics returns bytes
+  tests/test_auto.py:
+    functions[17]{name,kind,sig,loc,async,lines,cc,does}:
+      _make_module,function,"(name:str='test_mod') -> types.ModuleType",25-34,false,10,2,Create a fake module with given functions.
+      MemorySink.__init__,method,(),15-16,false,2,1,creates
+      MemorySink.write,method,"(entry:LogEntry) -> None",18-19,false,2,1,logs
+      MemorySink.close,method,() -> None,21-22,false,2,1,stops
+      TestAutoLog.test_patches_public_functions,method,(),39-59,false,21,1,checks patches public functions
+      TestAutoLog.test_skips_private_functions,method,(),61-78,false,18,1,checks skips private functions
+      TestAutoLog.test_include_private,method,(),80-94,false,15,1,checks include private
+      TestAutoLog.test_catch_exceptions_mode,method,(),96-112,false,17,1,checks catch exceptions mode
+      TestAutoLog.test_does_not_double_wrap,method,(),114-130,false,17,1,checks does not double wrap
+      TestAutoLog.test_skips_imported_functions,method,(),132-148,false,17,1,Functions from other modules should not be patched.
+      TestAutoLog.test_skips_nfo_skip_decorated,method,(),150-165,false,16,1,checks skips nfo skip decorated
+      TestAutoLog.test_custom_level,method,(),167-179,false,13,1,checks custom level
+      TestAutoLog.test_skips_classes,method,(),181-199,false,19,1,Classes should not be patched (use @logged for those).
+      TestAutoLog.test_max_repr_length_is_forwarded,method,(),201-216,false,16,1,checks max repr length is forwarded
+      TestAutoLogByName.test_patches_by_module_name,method,(),221-243,false,23,1,checks patches by module name
+      TestAutoLogByName.test_skips_missing_modules,method,(),245-249,false,5,1,checks skips missing modules
+      TestAutoLogByName.test_multiple_modules_by_name,method,(),251-279,false,29,1,checks multiple modules by name
+  tests/test_env.py:
+    functions[23]{name,kind,sig,loc,async,lines,cc,does}:
+      _make_entry,function,() -> LogEntry,27-42,false,16,1,creates entry
+      MemorySink.__init__,method,(),17-18,false,2,1,creates
+      MemorySink.write,method,"(entry:LogEntry) -> None",20-21,false,2,1,logs
+      MemorySink.close,method,() -> None,23-24,false,2,1,stops
+      TestEnvTagger.test_tags_environment,method,(),49-54,false,6,1,checks tags environment
+      TestEnvTagger.test_tags_trace_id,method,(),56-61,false,6,1,checks tags trace id
+      TestEnvTagger.test_tags_version,method,(),63-68,false,6,1,checks tags version
+      TestEnvTagger.test_auto_detect_env,method,(monkeypatch),70-74,false,5,1,checks auto detect env
+      TestEnvTagger.test_auto_detect_ci,method,(monkeypatch),76-89,false,14,1,checks auto detect ci
+      TestEnvTagger.test_does_not_overwrite_existing,method,(),91-96,false,6,1,checks does not overwrite existing
+      TestEnvTagger.test_close_delegates,method,(),98-101,false,4,1,checks close delegates
+      TestEnvTagger.test_generate_trace_id,method,(),103-106,false,4,1,checks generate trace id
+      TestDynamicRouter.test_routes_by_env,method,(),113-127,false,15,1,checks routes by env
+      TestDynamicRouter.test_routes_by_level,method,(),129-141,false,13,1,checks routes by level
+      TestDynamicRouter.test_default_fallback,method,(),143-147,false,5,1,checks default fallback
+      TestDynamicRouter.test_no_default_no_match,method,(),149-151,false,3,1,checks no default no match
+      TestDynamicRouter.test_first_match_wins,method,(),153-164,false,12,1,checks first match wins
+      TestDynamicRouter.test_close_all_sinks,method,(),166-174,false,9,1,checks close all sinks
+      TestDiffTracker.test_no_diff_same_version,method,(),181-188,false,8,1,checks no diff same version
+      TestDiffTracker.test_detects_diff_across_versions,method,(),190-199,false,10,1,checks detects diff across versions
+      TestDiffTracker.test_no_diff_without_version,method,(),201-208,false,8,1,checks no diff without version
+      TestDiffTracker.test_different_functions_no_diff,method,(),210-217,false,8,1,checks different functions no diff
+      TestDiffTracker.test_close_delegates,method,(),219-222,false,4,1,checks close delegates
+  tests/test_llm.py:
+    functions[19]{name,kind,sig,loc,async,lines,cc,does}:
+      _make_entry,function,() -> LogEntry,26-42,false,17,1,creates entry
+      MemorySink.__init__,method,(),16-17,false,2,1,creates
+      MemorySink.write,method,"(entry:LogEntry) -> None",19-20,false,2,1,logs
+      MemorySink.close,method,() -> None,22-23,false,2,1,stops
+      TestPromptInjection.test_detects_ignore_instructions,method,(),49-52,false,4,1,checks detects ignore instructions
+      TestPromptInjection.test_detects_system_prompt,method,(),54-56,false,3,1,checks detects system prompt
+      TestPromptInjection.test_detects_jailbreak,method,(),58-60,false,3,1,checks detects jailbreak
+      TestPromptInjection.test_detects_dan_mode,method,(),62-64,false,3,1,checks detects dan mode
+      TestPromptInjection.test_detects_reveal_prompt,method,(),66-68,false,3,1,checks detects reveal prompt
+      TestPromptInjection.test_clean_text_passes,method,(),70-73,false,4,1,checks clean text passes
+      TestPromptInjection.test_scan_entry_args,method,(),75-79,false,5,1,checks scan entry args
+      TestPromptInjection.test_scan_entry_kwargs,method,(),81-84,false,4,1,checks scan entry kwargs
+      TestPromptInjection.test_scan_entry_clean,method,(),86-89,false,4,1,checks scan entry clean
+      TestPromptInjection.test_scan_entry_extra_message,method,(),91-94,false,4,1,checks scan entry extra message
+      TestLLMSink.test_delegates_to_sink,method,(),101-111,false,11,1,checks delegates to sink
+      TestLLMSink.test_injection_detection_on_write,method,(),113-129,false,17,1,checks injection detection on write
+      TestLLMSink.test_analyze_levels_filter,method,(),131-145,false,15,1,checks analyze levels filter
+      TestLLMSink.test_build_user_prompt,method,(),147-154,false,8,1,checks build user prompt
+      TestLLMSink.test_close_delegates,method,(),156-160,false,5,1,checks close delegates
+  tests/test_json_sink.py:
+    functions[10]{name,kind,sig,loc,async,lines,cc,does}:
+      tmp_jsonl,function,(tmp_path),14-15,false,2,1,tmp jsonl
+      _make_entry,function,(),18-33,false,16,1,creates entry
+      TestJSONSink.test_write_creates_file,method,(tmp_jsonl),38-41,false,4,1,checks write creates file
+      TestJSONSink.test_write_valid_json_lines,method,(tmp_jsonl),43-55,false,13,1,checks write valid json lines
+      TestJSONSink.test_includes_all_fields,method,(tmp_jsonl),57-71,false,15,1,checks includes all fields
+      TestJSONSink.test_includes_extra_fields,method,(tmp_jsonl),73-80,false,8,1,checks includes extra fields
+      TestJSONSink.test_pretty_mode,method,(tmp_jsonl),82-89,false,8,1,checks pretty mode
+      TestJSONSink.test_delegates_to_downstream,method,(tmp_jsonl),91-105,false,15,1,checks delegates to downstream
+      TestJSONSink.test_close_delegates,method,(tmp_jsonl),107-118,false,12,1,checks close delegates
+      TestJSONSink.test_error_entry,method,(tmp_jsonl),120-134,false,15,1,checks error entry
+  tests/test_configure.py:
+    functions[24]{name,kind,sig,loc,async,lines,cc,does}:
+      MemorySink.__init__,method,(),17-18,false,2,1,creates
+      MemorySink.write,method,"(entry:LogEntry) -> None",20-21,false,2,1,logs
+      MemorySink.close,method,() -> None,23-24,false,2,1,stops
+      TestParseSinkSpec.test_sqlite,method,(tmp_path),31-34,false,4,1,checks sqlite
+      TestParseSinkSpec.test_csv,method,(tmp_path),36-38,false,3,1,checks csv
+      TestParseSinkSpec.test_md,method,(tmp_path),40-42,false,3,1,checks md
+      TestParseSinkSpec.test_invalid_no_colon,method,(),44-46,false,3,1,checks invalid no colon
+      TestParseSinkSpec.test_unknown_type,method,(),48-50,false,3,1,checks unknown type
+      TestConfigure.setup_method,method,(),57-60,false,4,1,initializes method
+      TestConfigure.test_returns_logger,method,(),62-65,false,4,1,checks returns logger
+      TestConfigure.test_with_sink_specs,method,(tmp_path),67-76,false,10,1,checks with sink specs
+      TestConfigure.test_with_sink_instances,method,(),78-86,false,9,1,checks with sink instances
+      TestConfigure.test_env_override_level,method,(monkeypatch),88-92,false,5,1,checks env override level
+      TestConfigure.test_env_override_sinks,method,"(tmp_path, monkeypatch)",94-100,false,7,1,checks env override sinks
+      TestConfigure.test_decorators_use_configured_logger,method,(),102-112,false,11,1,checks decorators use configured logger
+      TestLogged.test_wraps_public_methods,method,(),119-141,false,23,1,checks wraps public methods
+      TestLogged.test_skip_decorator,method,(),143-162,false,20,1,checks skip decorator
+      TestLogged.test_logged_with_level,method,(),164-176,false,13,1,checks logged with level
+      TestLogged.test_logged_preserves_exceptions,method,(),178-193,false,16,1,checks logged preserves exceptions
+      TestStdlibBridge.test_bridge_captures_stdlib_logs,method,(),200-222,false,23,1,checks bridge captures stdlib logs
+      TestStdlibBridge.test_bridge_qualified_function_name,method,(),224-244,false,21,1,checks bridge qualified function name
+      TestStdlibBridge.test_bridge_multiple_loggers,method,(),246-275,false,30,3,checks bridge multiple loggers
+      TestStdlibBridge.test_bridge_no_duplicate_from_child_propagation,method,(),277-306,false,30,3,"When both parent and child loggers are in the bridge list,"
+      TestStdlibBridge.test_bridge_exception_info,method,(),308-329,false,22,2,checks bridge exception info
+  tests/test_sinks.py:
+    functions[7]{name,kind,sig,loc,async,lines,cc,does}:
+      _make_entry,function,() -> LogEntry,14-29,false,16,1,creates entry
+      TestSQLiteSink.test_write_and_query,method,(tmp_path),36-47,false,12,1,checks write and query
+      TestSQLiteSink.test_custom_table,method,(tmp_path),49-59,false,11,1,checks custom table
+      TestCSVSink.test_write_rows,method,(tmp_path),66-77,false,12,1,checks write rows
+      TestCSVSink.test_does_not_duplicate_header,method,(tmp_path),79-93,false,15,3,checks does not duplicate header
+      TestMarkdownSink.test_write_entry,method,(tmp_path),100-109,false,10,1,checks write entry
+      TestMarkdownSink.test_exception_block,method,(tmp_path),111-123,false,13,1,checks exception block
+  tests/test_webhook.py:
+    functions[11]{name,kind,sig,loc,async,lines,cc,does}:
+      _make_entry,function,(),14-32,false,19,1,creates entry
+      TestWebhookSink.test_only_sends_configured_levels,method,(),37-44,false,8,1,"Should not send for DEBUG when levels=['ERROR']."
+      TestWebhookSink.test_sends_for_error_level,method,(),46-52,false,7,1,Should send for ERROR level.
+      TestWebhookSink.test_slack_payload_format,method,(),54-60,false,7,1,checks slack payload format
+      TestWebhookSink.test_discord_payload_format,method,(),62-67,false,6,1,checks discord payload format
+      TestWebhookSink.test_teams_payload_format,method,(),69-74,false,6,1,checks teams payload format
+      TestWebhookSink.test_raw_payload_format,method,(),76-81,false,6,1,checks raw payload format
+      TestWebhookSink.test_delegates_to_downstream,method,(),83-95,false,13,1,checks delegates to downstream
+      TestWebhookSink.test_close_delegates,method,(),97-108,false,12,1,checks close delegates
+      TestWebhookSink.test_custom_levels,method,(),110-115,false,6,1,checks custom levels
+      TestWebhookSink.test_fire_and_forget_no_crash,method,(),117-122,false,6,1,Should not crash even if URL is unreachable.
+  tests/test_decorators.py:
+    functions[21]{name,kind,sig,loc,async,lines,cc,does}:
+      logger,function,(),25-30,false,6,1,logger
+      MemorySink.__init__,method,(),14-15,false,2,1,creates
+      MemorySink.write,method,"(entry:LogEntry) -> None",17-18,false,2,1,logs
+      MemorySink.close,method,() -> None,20-21,false,2,1,stops
+      TestLogCall.test_logs_args_and_return,method,(logger),37-53,false,17,1,checks logs args and return
+      TestLogCall.test_logs_kwargs,method,(logger),55-65,false,11,1,checks logs kwargs
+      TestLogCall.test_logs_exception,method,(logger),67-82,false,16,1,checks logs exception
+      TestLogCall.test_custom_level,method,(logger),84-92,false,9,1,checks custom level
+      TestLogCall.test_arg_types,method,(logger),94-103,false,10,1,checks arg types
+      TestLogCall.test_max_repr_length_truncates_serialized_values,method,(logger),105-123,false,19,1,checks max repr length truncates serialized values
+      TestCatch.test_suppresses_exception,method,(logger),130-140,false,11,1,checks suppresses exception
+      TestCatch.test_returns_default,method,(logger),142-149,false,8,1,checks returns default
+      TestCatch.test_success_path,method,(logger),151-159,false,9,1,checks success path
+      TestCatch.test_max_repr_length_truncates_error_args,method,(logger),161-172,false,12,1,checks max repr length truncates error args
+      TestAsyncLogCall.test_logs_async_return,method,(logger),180-192,true,13,1,checks logs async return
+      TestAsyncLogCall.test_logs_async_exception,method,(logger),195-207,true,13,1,checks logs async exception
+      TestAsyncLogCall.test_async_custom_level,method,(logger),210-218,true,9,1,checks async custom level
+      TestAsyncLogCall.test_async_preserves_coroutine,method,(logger),221-229,true,9,1,checks async preserves coroutine
+      TestAsyncCatch.test_async_suppresses_exception,method,(logger),235-244,true,10,1,checks async suppresses exception
+      TestAsyncCatch.test_async_returns_default,method,(logger),247-254,true,8,1,checks async returns default
+      TestAsyncCatch.test_async_success_path,method,(logger),257-265,true,9,1,checks async success path
+  nfo/auto.py:
+    functions[3]{name,kind,sig,loc,async,lines,cc,does}:
+      _should_patch,function,"(name:str, obj:Any, module_name:str, include_private:bool=False) -> bool",33-55,false,23,12,Determine if an object should be auto-patched with logging.
+      auto_log,function,() -> int,58-138,false,81,9,Automatically wrap all functions in one or more modules with logging.
+      auto_log_by_name,function,() -> int,141-195,false,55,4,Like auto_log() but accepts module name strings instead of module objects.
+  nfo/llm.py:
+    functions[8]{name,kind,sig,loc,async,lines,cc,does}:
+      detect_prompt_injection,function,"(text:str) -> Optional[str]",40-52,false,13,4,Scan text for common prompt injection patterns.
+      scan_entry_for_injection,function,"(entry:LogEntry) -> Optional[str]",55-75,false,21,11,Scan a LogEntry's args/kwargs for prompt injection attempts.
+      LLMSink.__init__,method,"(model:str='gpt-4o-mini') -> None",108-126,false,19,3,creates
+      LLMSink._build_user_prompt,method,"(entry:LogEntry) -> str",128-144,false,17,5,creates user prompt
+      LLMSink._analyze,method,"(entry:LogEntry) -> str",146-164,false,19,3,Call LLM via litellm and return analysis text.
+      LLMSink._process,method,"(entry:LogEntry) -> None",166-187,false,22,9,Analyze entry and enrich it.
+      LLMSink.write,method,"(entry:LogEntry) -> None",189-194,false,6,2,logs
+      LLMSink.close,method,() -> None,196-198,false,3,2,stops
+  nfo/configure.py:
+    functions[4]{name,kind,sig,loc,async,lines,cc,does}:
+      _parse_sink_spec,function,"(spec:str) -> Sink",25-52,false,28,8,"Parse a sink specification string like 'sqlite:logs.db' or 'csv:logs.csv'."
+      configure,function,() -> Logger,104-278,false,175,33,Configure nfo logging for the entire project.
+      _StdlibBridge.__init__,method,"(nfo_logger:Logger) -> None",65-67,false,3,1,creates
+      _StdlibBridge.emit,method,"(record:Any) -> None",69-101,false,33,13,sends
+  nfo/webhook.py:
+    functions[5]{name,kind,sig,loc,async,lines,cc,does}:
+      WebhookSink.__init__,method,"(url:str, delegate:Optional[Sink]=None) -> None",36-52,false,17,4,creates
+      WebhookSink._build_payload,method,"(entry:LogEntry) -> Dict[str, Any]",54-107,false,54,12,Build webhook payload based on format.
+      WebhookSink._send,method,"(payload:Dict[str,Any]) -> None",109-121,false,13,2,"Send payload via HTTP POST (fire-and-forget, no crash on failure)."
+      WebhookSink.write,method,"(entry:LogEntry) -> None",123-131,false,9,3,logs
+      WebhookSink.close,method,() -> None,133-135,false,3,2,stops
+  nfo/__init__.py:
+    functions[1]{name,kind,sig,loc,async,lines,cc,does}:
+      __getattr__,function,"(name:str)",19-23,false,5,2,getattr
+  nfo/__main__.py:
+    functions[9]{name,kind,sig,loc,async,lines,cc,does}:
+      _setup_logger,function,"(sink_specs:list[str], env:Any=None)",26-43,false,18,3,Build nfo Logger from CLI sink specs.
+      cmd_run,function,(args),46-124,false,79,20,Run a command and log it through nfo.
+      cmd_logs,function,(args),127-198,false,72,16,Query nfo logs from SQLite database.
+      cmd_version,function,(args),201-204,false,4,1,Print nfo version.
+      cmd_serve,function,(args),207-234,false,28,6,Start nfo HTTP logging service.
+      _run_inline_server,function,"(host:str, port:int)",237-329,false,93,5,Run a minimal nfo HTTP service inline.
+      _detect_language,function,"(cmd:str) -> str",332-353,false,22,11,Guess language from command name.
+      _parse_duration,function,"(spec:str) -> float",356-365,false,10,4,"Parse duration like '24h', '30m', '7d' to hours."
+      main,function,(),368-441,false,74,7,main
+  nfo/models.py:
+    functions[7]{name,kind,sig,loc,async,lines,cc,does}:
+      _truncate_text,function,"(text:str, max_length:Optional[int]) -> str",13-20,false,8,4,Truncate text representation to a bounded length (if configured).
+      safe_repr,function,"(value:Any, max_length:Optional[int]=DEFAULT_MAX_REPR_LENGTH) -> str",23-29,false,7,2,Best-effort repr with defensive truncation.
+      LogEntry.now,method,() -> datetime,58-59,false,2,1,now
+      LogEntry.args_repr,method,() -> str,61-62,false,2,1,args repr
+      LogEntry.kwargs_repr,method,() -> str,64-65,false,2,1,kwargs repr
+      LogEntry.return_value_repr,method,() -> str,67-68,false,2,1,return value repr
+      LogEntry.as_dict,method,"() -> Dict[str, Any]",70-91,false,22,9,Convert to a flat dictionary suitable for serialization.
+  nfo/decorators.py:
+    functions[10]{name,kind,sig,loc,async,lines,cc,does}:
+      _get_default_logger,function,() -> Any,22-27,false,6,2,retrieves default logger
+      set_default_logger,function,"(logger:Any) -> None",30-33,false,4,1,Replace the module-level default logger used by decorators.
+      _arg_types,function,"(args:tuple, kwargs:dict) -> tuple",40-43,false,4,3,arg types
+      _module_of,function,"(func:Callable) -> str",46-47,false,2,2,module of
+      log_call,function,"(func:F) -> F",55-55,false,1,1,logs call
+      log_call,function,"() -> Callable[[F], F]",58-63,false,6,1,logs call
+      log_call,function,"(func:Optional[F]=None) -> Any",65-185,false,121,2,Decorator that automatically logs function calls.
+      catch,function,"(func:F) -> F",193-193,false,1,1,catch
+      catch,function,"() -> Callable[[F], F]",196-202,false,7,1,catch
+      catch,function,"(func:Optional[F]=None) -> Any",204-313,false,110,2,Decorator that logs calls **and** suppresses exceptions.
+  nfo/env.py:
+    functions[14]{name,kind,sig,loc,async,lines,cc,does}:
+      _detect_environment,function,() -> str,26-44,false,19,9,Auto-detect environment from common env vars.
+      _detect_trace_id,function,"() -> Optional[str]",47-54,false,8,3,Extract trace ID from common tracing env vars.
+      _detect_version,function,"() -> Optional[str]",57-64,false,8,3,Extract app version from common env vars or git.
+      generate_trace_id,function,() -> str,67-69,false,3,1,Generate a new trace ID.
+      EnvTagger.__init__,method,"(delegate:Sink) -> None",86-103,false,18,6,creates
+      EnvTagger.write,method,"(entry:LogEntry) -> None",105-112,false,8,7,logs
+      EnvTagger.close,method,() -> None,114-115,false,2,1,stops
+      DynamicRouter.__init__,method,"(rules:Sequence[tuple[Callable[Any,bool],Sink]], default:Optional[Sink]=None) -> None",143-149,false,7,1,creates
+      DynamicRouter.write,method,"(entry:LogEntry) -> None",151-160,false,10,5,logs
+      DynamicRouter.close,method,() -> None,162-169,false,8,5,stops
+      DiffTracker.__init__,method,"(delegate:Sink) -> None",190-193,false,4,1,creates
+      DiffTracker._make_key,method,"(entry:LogEntry) -> str",196-199,false,4,1,creates key
+      DiffTracker.write,method,"(entry:LogEntry) -> None",201-222,false,22,6,logs
+      DiffTracker.close,method,() -> None,224-225,false,2,1,stops
+  nfo/prometheus.py:
+    functions[5]{name,kind,sig,loc,async,lines,cc,does}:
+      PrometheusSink.__init__,method,"(delegate:Optional[Sink]=None) -> None",51-101,false,51,4,creates
+      PrometheusSink._start_server,method,"(port:int) -> None",103-107,false,5,2,starts server
+      PrometheusSink.write,method,"(entry:LogEntry) -> None",109-127,false,19,7,logs
+      PrometheusSink.close,method,() -> None,129-131,false,3,2,stops
+      PrometheusSink.get_metrics,method,() -> bytes,133-135,false,3,1,Return current metrics in Prometheus text format.
+  nfo/logged.py:
+    functions[5]{name,kind,sig,loc,async,lines,cc,does}:
+      _should_wrap,function,"(name:str, attr:Any) -> bool",34-44,false,11,5,Determine if a class attribute should be auto-logged.
+      skip,function,"(func:Callable) -> Callable",47-50,false,4,1,Mark a public method to be excluded from @logged auto-wrapping.
+      logged,function,"(cls:C) -> C",54-54,false,1,1,logs
+      logged,function,"() -> Callable[[C], C]",57-62,false,6,1,logs
+      logged,function,"(cls:Optional[C]=None) -> Any",64-99,false,36,2,Class decorator that auto-wraps all public methods with @log_call.
+  nfo/json_sink.py:
+    functions[3]{name,kind,sig,loc,async,lines,cc,does}:
+      JSONSink.__init__,method,"(file_path:Any='logs.jsonl') -> None",38-48,false,11,1,creates
+      JSONSink.write,method,"(entry:LogEntry) -> None",50-65,false,16,6,logs
+      JSONSink.close,method,() -> None,67-69,false,3,2,stops
+  nfo/logger.py:
+    functions[6]{name,kind,sig,loc,async,lines,cc,does}:
+      Logger.__init__,method,"(name:str='nfo', level:str='DEBUG', sinks:Optional[List[Sink]]=None, propagate_stdlib:bool=True) -> None",22-45,false,24,4,creates
+      Logger.add_sink,method,"(sink:Sink) -> \"Logger\"",49-52,false,4,1,Register a new sink and return *self* for chaining.
+      Logger.remove_sink,method,"(sink:Sink) -> None",54-55,false,2,1,deletes sink
+      Logger.emit,method,"(entry:LogEntry) -> None",59-67,false,9,3,Send a log entry to all sinks and (optionally) stdlib.
+      Logger._format_stdlib,method,"(entry:LogEntry) -> str",70-82,false,13,6,formats stdlib
+      Logger.close,method,() -> None,86-89,false,4,2,Close all sinks.
+  nfo/sinks.py:
+    functions[15]{name,kind,sig,loc,async,lines,cc,does}:
+      Sink.write,method,"(entry:LogEntry) -> None",42-43,false,2,1,logs
+      Sink.close,method,() -> None,46-47,false,2,1,stops
+      SQLiteSink.__init__,method,"(db_path:Any='logs.db', table:str='logs') -> None",57-62,false,6,1,creates
+      SQLiteSink._get_conn,method,() -> sqlite3.Connection,66-69,false,4,2,retrieves conn
+      SQLiteSink._ensure_table,method,() -> None,71-97,false,27,1,ensure table
+      SQLiteSink.write,method,"(entry:LogEntry) -> None",101-112,false,12,2,logs
+      SQLiteSink.close,method,() -> None,114-118,false,5,2,stops
+      CSVSink.__init__,method,"(file_path:Any='logs.csv') -> None",128-131,false,4,1,creates
+      CSVSink._write_header_if_needed,method,() -> None,133-137,false,5,3,logs header if needed
+      CSVSink.write,method,"(entry:LogEntry) -> None",139-144,false,6,2,logs
+      CSVSink.close,method,() -> None,146-147,false,2,1,stops
+      MarkdownSink.__init__,method,"(file_path:Any='logs.md') -> None",157-160,false,4,1,creates
+      MarkdownSink._write_header_if_needed,method,() -> None,162-165,false,4,3,logs header if needed
+      MarkdownSink.write,method,"(entry:LogEntry) -> None",167-194,false,28,7,logs
+      MarkdownSink.close,method,() -> None,196-197,false,2,1,stops
+  examples/http-service/main.py:
+    functions[5]{name,kind,sig,loc,async,lines,cc,does}:
+      _store_entry,function,"(entry:LogEntry) -> dict",118-147,false,30,6,Write a single log entry through nfo and return result.
+      log_call,function,"(entry:LogEntry)",151-154,true,4,1,Log a single call from any language.
+      log_batch,function,"(batch:LogBatchRequest)",158-161,true,4,2,Log multiple entries at once.
+      get_logs,function,"(language:Optional[str]=Query(None), level:Optional[str]=Query(None), limit:int=Query(50, ge=1, le=1000))",165-187,true,23,3,Query stored logs from SQLite.
+      health,function,(),191-192,true,2,1,health
+  examples/auto-log/main.py:
+    functions[5]{name,kind,sig,loc,async,lines,cc,does}:
+      create_user,function,"(name:str, email:str) -> dict",29-31,false,3,1,Create a new user.
+      delete_user,function,"(user_id:int) -> bool",34-38,false,5,2,Delete user by ID.
+      calculate_total,function,"(prices:list) -> float",41-43,false,3,1,Sum a list of prices.
+      health_check,function,() -> str,47-49,false,3,1,"Excluded from auto_log — called frequently, not interesting."
+      _internal_helper,function,(),52-54,false,3,1,Private function — auto_log skips these by default.
+  examples/bash-wrapper/main.py:
+    functions[3]{name,kind,sig,loc,async,lines,cc,does}:
+      setup_logger,function,() -> Logger,31-41,false,11,1,initializes logger
+      run_bash,function,"(script_path:str) -> dict",45-57,false,13,2,Run a Bash script and capture its output through nfo logging.
+      main,function,(),60-79,false,20,3,main
+  examples/sqlite-sink/main.py:
+    functions[3]{name,kind,sig,loc,async,lines,cc,does}:
+      setup_logger,function,() -> Logger,13-17,false,5,1,initializes logger
+      fetch_user,function,"(user_id:int) -> dict",21-24,false,4,2,retrieves user
+      parse_config,function,"(raw:str) -> dict",28-31,false,4,1,Parse config string.
+  examples/go-client/main.go:
+    functions[5]{name,kind,sig,loc,async,lines,cc,does}:
+      NewNfoClient,function,(baseURL string),"-",false,1,1,creates nfo client
+      Log,function,(entry LogEntry) -> error,"-",false,1,1,logs
+      LogCall,function,"(cmd string, args []string, fn func() -> (string, error)","-",false,1,1,logs call
+      getEnv,function,"(key, fallback string) -> string","-",false,1,1,retrieves env
+      main,function,(),"-",false,1,1,main
+  examples/configure/main.py:
+    functions[4]{name,kind,sig,loc,async,lines,cc,does}:
+      process_order,function,"(order_id:str, amount:float) -> dict",40-41,false,2,1,processes order
+      parse_config,function,"(raw:str) -> dict",45-47,false,3,1,parses config
+      PaymentService.charge,method,"(amount:float) -> bool",52-53,false,2,1,charge
+      PaymentService.refund,method,"(tx_id:str) -> dict",55-56,false,2,1,refund
+  examples/basic-usage/main.py:
+    functions[3]{name,kind,sig,loc,async,lines,cc,does}:
+      add,function,"(a:int, b:int) -> int",9-11,false,3,1,Add two numbers.
+      greet,function,"(name:str) -> str",15-16,false,2,1,greet
+      risky_divide,function,"(a:float, b:float) -> float",20-22,false,3,1,Divides a by b.
+  examples/markdown-sink/main.py:
+    functions[3]{name,kind,sig,loc,async,lines,cc,does}:
+      setup_logger,function,() -> Logger,12-16,false,5,1,initializes logger
+      compute,function,"(x:float, y:float) -> float",20-21,false,2,1,processes
+      dangerous,function,"(data:str) -> dict",25-27,false,3,1,dangerous
+  examples/csv-sink/main.py:
+    functions[3]{name,kind,sig,loc,async,lines,cc,does}:
+      setup_logger,function,() -> Logger,12-16,false,5,1,initializes logger
+      multiply,function,"(a:int, b:int) -> int",20-21,false,2,1,multiply
+      process_items,function,"(items:list) -> int",25-27,false,3,1,Process items and return count.
+  examples/grpc-service/server.py:
+    functions[6]{name,kind,sig,loc,async,lines,cc,does}:
+      _store_request,function,"(req:Any) -> nfo_pb2.LogResponse",88-119,false,32,10,"Convert a gRPC LogRequest to nfo LogEntry, emit, return response."
+      serve,function,"(port:int=GRPC_PORT, max_workers:int=10)",208-226,false,19,2,Start the gRPC server.
+      NfoLoggerServicer.LogCall,method,"(request, context)",129-131,false,3,1,Log a single function call.
+      NfoLoggerServicer.BatchLog,method,"(request, context)",133-139,false,7,2,Log multiple entries in one round-trip.
+      NfoLoggerServicer.StreamLog,method,"(request_iterator, context)",141-144,false,4,2,Stream log entries (bidirectional).
+      NfoLoggerServicer.QueryLogs,method,"(request, context)",146-201,false,56,11,Query stored logs from SQLite.
+  examples/grpc-service/client.py:
+    functions[1]{name,kind,sig,loc,async,lines,cc,does}:
+      run_demo,function,"(target:str='localhost:50051')",44-148,false,105,6,Run all four gRPC RPCs against nfo server.
+  examples/grpc-service/nfo_pb2_grpc.py:
+    functions[10]{name,kind,sig,loc,async,lines,cc,does}:
+      add_NfoLoggerServicer_to_server,function,"(servicer, server)",95-121,false,27,1,creates nfologgerservicer to server
+      NfoLoggerStub.__init__,method,(channel),33-58,false,26,1,Constructor.
+      NfoLoggerServicer.LogCall,method,"(request, context)",66-71,false,6,1,Log a single function call
+      NfoLoggerServicer.BatchLog,method,"(request, context)",73-78,false,6,1,Log multiple entries in one round-trip
+      NfoLoggerServicer.StreamLog,method,"(request_iterator, context)",80-85,false,6,1,Stream log entries (high-throughput)
+      NfoLoggerServicer.QueryLogs,method,"(request, context)",87-92,false,6,1,Query stored logs
+      NfoLogger.LogCall,method,"(request, target, options=(), channel_credentials=None, call_credentials=None, insecure=False, compression=None, wait_for_ready=None)",131-155,false,25,1,logs call
+      NfoLogger.BatchLog,method,"(request, target, options=(), channel_credentials=None, call_credentials=None, insecure=False, compression=None, wait_for_ready=None)",158-182,false,25,1,batch log
+      NfoLogger.StreamLog,method,"(request_iterator, target, options=(), channel_credentials=None, call_credentials=None, insecure=False, compression=None, wait_for_ready=None)",185-209,false,25,1,stream log
+      NfoLogger.QueryLogs,method,"(request, target, options=(), channel_credentials=None, call_credentials=None, insecure=False, compression=None, wait_for_ready=None)",212-236,false,25,1,retrieves logs
+  examples/multi-sink/main.py:
+    functions[4]{name,kind,sig,loc,async,lines,cc,does}:
+      setup_logger,function,() -> Logger,16-27,false,12,1,initializes logger
+      fibonacci,function,"(n:int) -> int",31-37,false,7,3,fibonacci
+      batch_process,function,"(items:list) -> dict",41-42,false,2,1,batch process
+      parse_int,function,"(value:str) -> int",46-47,false,2,1,parses int
+  examples/env-tagger/main.py:
+    functions[3]{name,kind,sig,loc,async,lines,cc,does}:
+      demo_env_tagger,function,(),36-68,false,33,2,EnvTagger wraps a sink to auto-tag every log entry.
+      demo_dynamic_router,function,(),71-99,false,29,1,DynamicRouter sends logs to different sinks based on rules.
+      demo_diff_tracker,function,(),102-121,false,20,1,DiffTracker detects when function output changes.
+  examples/env-config/main.py:
+    functions[4]{name,kind,sig,loc,async,lines,cc,does}:
+      create_order,function,"(order_id:str, amount:float) -> dict",96-97,false,2,1,creates order
+      parse_payload,function,"(raw:str) -> dict",101-103,false,3,1,parses payload
+      InventoryService.check_stock,method,"(item_id:str) -> int",108-109,false,2,1,checks stock
+      InventoryService.reserve,method,"(item_id:str, qty:int) -> bool",111-114,false,4,2,reserve
+  examples/async-usage/main.py:
+    functions[5]{name,kind,sig,loc,async,lines,cc,does}:
+      setup_logger,function,() -> Logger,22-29,false,8,1,initializes logger
+      fetch_data,function,"(url:str) -> dict",33-36,true,4,1,Simulate an async HTTP fetch.
+      process_batch,function,"(items:list) -> int",40-43,true,4,1,Process items concurrently.
+      risky_fetch,function,"(url:str) -> dict",47-52,true,6,2,"Fetch that may fail — returns {} on error instead of raising."
+      main,function,(),55-96,true,42,2,main

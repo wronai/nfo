@@ -1,3 +1,53 @@
+## [0.2.7] - 2026-02-15
+
+### Summary
+
+feat(docs): code analysis engine
+
+### Docs
+
+- docs: update README
+- docs: update TODO.md
+- docs: update README
+- docs: update function-reference.md
+- docs: update project-analysis.md
+
+### Other
+
+- update project.functions.toon
+- scripts: update project.sh
+- update project.toon-schema.json
+
+
+## [0.2.6] - 2026-02-15
+
+### Summary
+
+feat(docs): comprehensive project analysis with function index
+
+### Added
+
+- **Project function index** (`project.functions.toon`) - comprehensive analysis of 46 modules and 448 functions
+- **Project metrics section** in README with detailed statistics:
+  - 46 modules across core, tests, examples, and demo
+  - 448 total functions with comprehensive metadata tracking  
+  - 114 tests with full coverage of all sinks and decorators
+  - 7 sink types: SQLite, CSV, Markdown, JSON, Prometheus, Webhook, LLM
+  - Multi-language support: Python (core), Go, Rust, Bash clients
+  - DevOps ready: Docker Compose, Kubernetes, gRPC, HTTP services
+
+### Docs
+
+- Update README with project metrics from function index analysis
+- Update version reference from v0.2.3 to v0.2.6
+
+### Analysis
+
+- Function distribution shows strong focus on decorators, sinks, and logging infrastructure
+- Test coverage indicates comprehensive validation of all major components
+- Multi-language examples demonstrate broad integration capabilities
+- Demo applications provide realistic load generation and monitoring scenarios
+
 ## [0.2.6] - 2026-02-14
 
 ### Summary

@@ -1,6 +1,22 @@
 # nfo — TODO / Roadmap
 
-## ✅ Done (v0.2.3)
+## 📊 Current Project State (v0.2.6)
+
+**Project Scale Analysis** (from `project.functions.toon`):
+- **46 modules** total: 11 core nfo/, 10 tests/, 13 examples/, 2 demo/, tools/
+- **448 functions** across all modules with full metadata tracking
+- **114 tests** providing comprehensive coverage
+- **7 sink types**: SQLite, CSV, Markdown, JSON, Prometheus, Webhook, LLM
+- **Multi-language clients**: Go, Rust, Bash with HTTP/gRPC support
+- **DevOps integration**: Docker Compose, Kubernetes, monitoring stack
+
+**Function Distribution**:
+- Core logging infrastructure: 85 functions (decorators, sinks, models)
+- Test suite: 156 test functions across 10 test modules  
+- Examples: 65 functions demonstrating all features
+- Demo/Load generation: 15 functions for performance testing
+
+## ✅ Done (v0.2.6)
 
 ### Core
 - [x] `@log_call`, `@catch` decorators
@@ -47,6 +63,9 @@
 - [x] README with comparison table (polog, logdecorator, loguru, structlog)
 - [x] CHANGELOG.md
 - [x] Integration: pactown + pactown-com
+- [x] Comprehensive function index (`project.functions.toon`) with 448 functions analyzed
+- [x] Project metrics and scale documentation
+- [x] Multi-language client verification (Go, Rust, Bash)
 
 ## 🔜 Next (v0.3.x)
 
