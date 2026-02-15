@@ -263,3 +263,99 @@ class TestAsyncCatch:
 
         assert await ok() == 99
         assert sink.entries[0].return_value == 99
+
+
+# -- sampling ----------------------------------------------------------------
+
+class TestSampling:
+
+    def test_sample_rate_none_logs_everything(self, logger):
+        lgr, sink = logger
+
+        @log_call(sample_rate=None)
+        def add(a, b):
+            return a + b
+
+        for _ in range(10):
+            add(1, 2)
+        assert len(sink.entries) == 10
+
+    def test_sample_rate_one_logs_everything(self, logger):
+        lgr, sink = logger
+
+        @log_call(sample_rate=1.0)
+        def add(a, b):
+            return a + b
+
+        for _ in range(10):
+            add(1, 2)
+        assert len(sink.entries) == 10
+
+    def test_sample_rate_zero_logs_nothing(self, logger):
+        lgr, sink = logger
+
+        @log_call(sample_rate=0.0)
+        def add(a, b):
+            return a + b
+
+        for _ in range(100):
+            add(1, 2)
+        assert len(sink.entries) == 0
+
+    def test_sample_rate_zero_still_logs_errors(self, logger):
+        lgr, sink = logger
+
+        @log_call(sample_rate=0.0)
+        def fail():
+            raise ValueError("boom")
+
+        for _ in range(5):
+            with pytest.raises(ValueError):
+                fail()
+        assert len(sink.entries) == 5
+        assert all(e.level == "ERROR" for e in sink.entries)
+
+    def test_sample_rate_partial(self, logger):
+        """With sample_rate=0.5, roughly half should be logged (statistical)."""
+        lgr, sink = logger
+        import random
+        random.seed(42)
+
+        @log_call(sample_rate=0.5)
+        def noop():
+            return 1
+
+        for _ in range(1000):
+            noop()
+        # With 1000 calls at 50%, expect ~500 ± ~50
+        assert 350 < len(sink.entries) < 650
+
+    def test_sample_rate_return_value_preserved(self, logger):
+        lgr, sink = logger
+
+        @log_call(sample_rate=0.0)
+        def add(a, b):
+            return a + b
+
+        assert add(3, 4) == 7  # return value works even when not logged
+
+    def test_catch_sample_rate_zero_logs_nothing_on_success(self, logger):
+        lgr, sink = logger
+
+        @catch(sample_rate=0.0)
+        def ok():
+            return 42
+
+        assert ok() == 42
+        assert len(sink.entries) == 0
+
+    def test_catch_sample_rate_zero_still_logs_errors(self, logger):
+        lgr, sink = logger
+
+        @catch(sample_rate=0.0, default=-1)
+        def fail():
+            raise RuntimeError("oops")
+
+        assert fail() == -1
+        assert len(sink.entries) == 1
+        assert sink.entries[0].level == "ERROR"

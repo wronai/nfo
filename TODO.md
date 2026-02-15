@@ -1,6 +1,6 @@
 # nfo — TODO / Roadmap
 
-## 📊 Current Project State (v0.2.6)
+## 📊 Current Project State (v0.3.0)
 
 **Project Scale Analysis** (from `project.functions.toon`):
 - **46 modules** total: 11 core nfo/, 10 tests/, 13 examples/, 2 demo/, tools/
@@ -16,7 +16,18 @@
 - Examples: 65 functions demonstrating all features
 - Demo/Load generation: 15 functions for performance testing
 
-## ✅ Done (v0.2.6)
+## ✅ Done (v0.3.0)
+
+### Binary Metadata Logging (v0.3.0)
+- [x] `ThresholdPolicy` — size-based decision on full data vs metadata
+- [x] `MetaExtractor` — image/audio/binary/file/numpy/pandas extractors with magic byte detection
+- [x] `register_extractor()` — custom extractor registry for user-defined types
+- [x] `@meta_log` — dedicated decorator for binary data pipelines (sync + async)
+- [x] `BinaryAwareRouter` — sink routing based on payload characteristics
+- [x] `@log_call(extract_meta=True)` / `@catch(extract_meta=True)` — opt-in in existing decorators
+- [x] `configure(meta_policy=..., auto_extract_meta=True)` — global configuration
+- [x] `NFO_META_THRESHOLD` / `NFO_META_EXTRACT` env vars
+- [x] 79 new tests (test_meta, test_extractors, test_meta_decorators, test_binary_router)
 
 ### Core
 - [x] `@log_call`, `@catch` decorators
@@ -68,6 +79,22 @@
 - [x] Multi-language client verification (Go, Rust, Bash)
 
 ## 🔜 Next (v0.3.x)
+
+### Binary Metadata — Phase 2
+
+- [x] `AsyncBufferedSink` — background-thread batched writes with configurable buffer_size, flush_interval, flush_on_error
+- [x] `RingBufferSink` — keep last N entries in memory, flush context to delegate on ERROR/CRITICAL; customizable trigger_levels
+- [x] `@log_call(sample_rate=0.01)` — sampling for high-throughput functions; errors always logged
+- [x] `sample_rate` on `@catch` and `@meta_log` too
+- [ ] `@log_call(sample_rate="adaptive")` — automatic rate based on throughput
+- [ ] Pipeline context / correlation: `with pipeline_context("name") as ctx:`
+- [ ] Prometheus metrics for data sizes: `nfo_data_bytes_total`, `nfo_meta_extractions_total`
+- [ ] Dedicated SQLite columns for meta fields (`data_size_bytes`, `data_format`, `data_hash`, `is_meta_log`)
+- [ ] Lazy evaluation mode for `@meta_log(lazy=True)` — compute hash/dimensions only when sink needs them
+- [ ] CLI extension: `nfo logs --meta --filter "data_format=PNG AND size_bytes > 1000000"`
+- [ ] PIL/Pillow image extractor (dimensions, mode, palette)
+- [ ] PDF extractor (page count from header)
+- [ ] ZIP/archive extractor (file listing)
 
 ### New Sinks
 

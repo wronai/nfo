@@ -1,3 +1,39 @@
+## [0.3.0] - 2026-02-15
+
+### Summary
+
+feat(meta): Binary data logging strategy — log metadata instead of raw data
+
+### Added
+
+- **`ThresholdPolicy`** (`nfo/meta.py`) — size-based policy deciding when to log full data vs extracted metadata; configurable `max_arg_bytes`, `max_return_bytes`, `max_total_bytes`, `binary_threshold`
+- **`MetaExtractor`** (`nfo/extractors.py`) — intelligent type detection and metadata extraction for binary payloads:
+  - Image meta (PNG/JPEG/BMP): format, dimensions, size, SHA-256 prefix
+  - Audio meta (WAV): channels, sample rate, bits per sample, duration
+  - Binary meta: format detection via magic bytes, entropy, compression detection
+  - File handle meta: name, mode, position, size (without reading contents)
+  - NumPy ndarray meta (duck-typed): shape, dtype, size, min/max/mean
+  - Pandas DataFrame meta (duck-typed): shape, columns, dtypes, memory, nulls
+  - `register_extractor()` / `unregister_all_extractors()` for custom type support
+- **`@meta_log`** (`nfo/meta_decorators.py`) — dedicated decorator for binary data pipelines; never logs raw `bytes`/`bytearray` above threshold; supports sync + async, custom `extract_fields`, per-argument extractors
+- **`BinaryAwareRouter`** (`nfo/binary_router.py`) — sink that routes log entries based on payload characteristics: meta-log entries → lightweight sink, large binary data → heavy sink, normal entries → full sink
+- **`@log_call(extract_meta=True)`** — opt-in metadata extraction in existing decorator; zero breaking changes; optional `meta_policy` parameter
+- **`@catch(extract_meta=True)`** — same integration for `@catch` decorator
+- **`configure(meta_policy=..., auto_extract_meta=True)`** — global configuration for metadata extraction
+- **Environment variables**: `NFO_META_THRESHOLD` (bytes), `NFO_META_EXTRACT` (true/false)
+- **`AsyncBufferedSink`** (`nfo/buffered_sink.py`) — background-thread batched writes; configurable `buffer_size`, `flush_interval`, `flush_on_error`; auto-flush on ERROR/CRITICAL; manual `flush()` and `pending` property
+- **`RingBufferSink`** (`nfo/ring_buffer_sink.py`) — in-memory ring buffer (configurable capacity) that flushes context to delegate on ERROR/CRITICAL; zero disk I/O during normal operation; customizable `trigger_levels` and `include_trigger`
+- **`sample_rate`** parameter on `@log_call`, `@catch`, and `@meta_log` — fraction of calls to log (0.0–1.0); errors are **always** logged regardless of sampling
+- **111 new tests** across 8 test files: `test_meta.py` (20), `test_extractors.py` (30), `test_meta_decorators.py` (20), `test_binary_router.py` (9), `test_buffered_sink.py` (11), `test_ring_buffer_sink.py` (13), sampling tests in `test_decorators.py` (8)
+
+### Changed
+
+- Version bump to 0.3.0 (minor: new modules, zero breaking changes)
+- `__init__.py`: exports `ThresholdPolicy`, `extract_meta`, `register_extractor`, `meta_log`, `BinaryAwareRouter`, `AsyncBufferedSink`, `RingBufferSink`
+- `configure.py`: accepts `meta_policy` and `auto_extract_meta`; reads `NFO_META_THRESHOLD` and `NFO_META_EXTRACT` env vars
+- `decorators.py`: `@log_call` and `@catch` accept `sample_rate` (sampling check deferred after function execution for zero overhead on skipped calls)
+- `meta_decorators.py`: `@meta_log` accepts `sample_rate`
+
 ## [0.2.8] - 2026-02-15
 
 ### Summary

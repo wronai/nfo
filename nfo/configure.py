@@ -20,6 +20,12 @@ from nfo.decorators import set_default_logger
 
 _configured = False
 _last_logger: Optional["Logger"] = None
+_global_meta_policy: Optional[Any] = None
+
+
+def get_global_meta_policy() -> Optional[Any]:
+    """Return the globally configured :class:`~nfo.meta.ThresholdPolicy` (if any)."""
+    return _global_meta_policy
 
 
 def _parse_sink_spec(spec: str) -> Sink:
@@ -115,6 +121,8 @@ def configure(
     llm_model: Optional[str] = None,
     detect_injection: bool = False,
     force: bool = False,
+    meta_policy: Optional[Any] = None,
+    auto_extract_meta: bool = False,
 ) -> Logger:
     """
     Configure nfo logging for the entire project.
@@ -135,6 +143,11 @@ def configure(
         llm_model: litellm model for LLM-powered log analysis (e.g. "gpt-4o-mini").
                    Wraps sinks with LLMSink. Requires: pip install nfo[llm]
         detect_injection: Enable prompt injection detection in log args.
+        meta_policy: :class:`~nfo.meta.ThresholdPolicy` for binary metadata
+                     extraction. Stored globally for use by ``@log_call``
+                     and ``@meta_log`` when no per-decorator policy is given.
+        auto_extract_meta: If ``True``, enable metadata extraction globally.
+                           Equivalent to ``NFO_META_EXTRACT=true``.
 
     Returns:
         Configured Logger instance.
@@ -144,6 +157,8 @@ def configure(
         NFO_SINKS: Comma-separated sink specs (e.g. "sqlite:logs.db,csv:logs.csv")
         NFO_ENV: Override environment tag
         NFO_LLM_MODEL: Override LLM model
+        NFO_META_THRESHOLD: Override meta_policy max_arg_bytes (in bytes)
+        NFO_META_EXTRACT: Set to 'true' to enable auto_extract_meta globally
 
     Examples:
         # Zero-config (just console output):
@@ -166,8 +181,15 @@ def configure(
             llm_model="gpt-4o-mini",
             detect_injection=True,
         )
+
+        # With binary metadata extraction:
+        configure(
+            sinks=["sqlite:app.db"],
+            meta_policy=ThresholdPolicy(max_arg_bytes=4096),
+            auto_extract_meta=True,
+        )
     """
-    global _configured, _last_logger
+    global _configured, _last_logger, _global_meta_policy
 
     if _configured and not force and _last_logger is not None:
         return _last_logger
@@ -186,6 +208,23 @@ def configure(
     env_llm = os.environ.get(f"{env_prefix}LLM_MODEL")
     if env_llm:
         llm_model = env_llm
+
+    # Meta extraction env overrides
+    env_meta_extract = os.environ.get(f"{env_prefix}META_EXTRACT", "").lower()
+    if env_meta_extract in ("true", "1", "yes"):
+        auto_extract_meta = True
+    env_meta_threshold = os.environ.get(f"{env_prefix}META_THRESHOLD")
+    if env_meta_threshold:
+        from nfo.meta import ThresholdPolicy
+        threshold = int(env_meta_threshold)
+        if meta_policy is None:
+            meta_policy = ThresholdPolicy(max_arg_bytes=threshold, max_return_bytes=threshold)
+        else:
+            meta_policy.max_arg_bytes = threshold
+            meta_policy.max_return_bytes = threshold
+
+    # Store global meta policy
+    _global_meta_policy = meta_policy
 
     # Build sink list
     resolved_sinks: List[Sink] = []
