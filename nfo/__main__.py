@@ -22,6 +22,12 @@ import sys
 import time
 from pathlib import Path
 
+# Import Pydantic for HTTP service models (conditionally for optional dashboard feature)
+try:
+    from pydantic import BaseModel
+except ImportError:
+    BaseModel = None  # type: ignore
+
 
 def _setup_logger(sink_specs: list[str], env: str | None = None):
     """Build nfo Logger from CLI sink specs."""
@@ -234,6 +240,29 @@ def cmd_serve(args):
     _run_inline_server(host, port)
 
 
+# Pydantic models for HTTP service (must be at module level for Pydantic v2)
+if BaseModel is not None:
+    class _HttpLogEntry(BaseModel):
+        cmd: str
+        args: list = []
+        language: str = "bash"
+        env: str = "prod"
+        success: bool | None = None
+        duration_ms: float | None = None
+        output: str | None = None
+        error: str | None = None
+
+    class _HttpBatchReq(BaseModel):
+        entries: list[_HttpLogEntry]
+else:
+    # Dummy classes when pydantic is not installed
+    class _HttpLogEntry:  # type: ignore
+        pass
+
+    class _HttpBatchReq:  # type: ignore
+        pass
+
+
 def _run_inline_server(host: str, port: int):
     """Run a minimal nfo HTTP service inline."""
     import uvicorn
@@ -241,8 +270,7 @@ def _run_inline_server(host: str, port: int):
     from nfo.models import LogEntry as NfoEntry
 
     try:
-        from fastapi import FastAPI, Query as FQuery
-        from pydantic import BaseModel
+        from fastapi import FastAPI, Query as FQuery, Body
     except ImportError:
         print("nfo serve requires: pip install nfo[dashboard]", file=sys.stderr)
         sys.exit(1)
@@ -262,20 +290,7 @@ def _run_inline_server(host: str, port: int):
 
     app = FastAPI(title="nfo Logging Service")
 
-    class _LogEntry(BaseModel):
-        cmd: str
-        args: list = []
-        language: str = "bash"
-        env: str = "prod"
-        success: bool | None = None
-        duration_ms: float | None = None
-        output: str | None = None
-        error: str | None = None
-
-    class _BatchReq(BaseModel):
-        entries: list[_LogEntry]
-
-    def _store(e: _LogEntry) -> dict:
+    def _store(e: _HttpLogEntry) -> dict:
         entry = NfoEntry(
             timestamp=NfoEntry.now(),
             level="INFO" if e.success is not False else "ERROR",
@@ -296,11 +311,11 @@ def _run_inline_server(host: str, port: int):
         return {"cmd": e.cmd, "language": e.language, "stored": True}
 
     @app.post("/log")
-    async def log_call(entry: _LogEntry):
+    async def log_call(entry: _HttpLogEntry = Body(...)):
         return _store(entry)
 
     @app.post("/log/batch")
-    async def log_batch(batch: _BatchReq):
+    async def log_batch(batch: _HttpBatchReq = Body(...)):
         results = [_store(e) for e in batch.entries]
         return {"stored": len(results), "results": results}
 

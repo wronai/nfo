@@ -16,7 +16,6 @@ keywords = ["logging", "decorator", "sqlite", "csv", "markdown", "auto-logging",
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License",
 ]
 
 [project.optional-dependencies]
