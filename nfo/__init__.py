@@ -11,6 +11,7 @@ from nfo.configure import configure
 from nfo.logged import logged, skip
 from nfo.env import EnvTagger, DynamicRouter, DiffTracker
 from nfo.llm import LLMSink, detect_prompt_injection, scan_entry_for_injection
+from nfo.redact import is_sensitive_key, redact_value, redact_kwargs, redact_string, redact_args
 from nfo.auto import auto_log, auto_log_by_name
 from nfo.json_sink import JSONSink
 from nfo.webhook import WebhookSink
@@ -124,7 +125,7 @@ def __getattr__(name: str):
         return FastAPIMiddleware
     raise AttributeError(f"module 'nfo' has no attribute {name!r}")
 
-__version__ = "0.2.16"
+__version__ = "0.2.17"
 
 __all__ = [
     "log_call",
@@ -170,4 +171,9 @@ __all__ = [
     "error",
     "event",
     "FastAPIMiddleware",
+    "is_sensitive_key",
+    "redact_value",
+    "redact_kwargs",
+    "redact_string",
+    "redact_args",
 ]

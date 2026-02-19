@@ -7,6 +7,7 @@ import sys
 from typing import List, Optional
 
 from nfo.models import LogEntry
+from nfo.redact import redact_kwargs, redact_string
 from nfo.sinks import Sink
 
 
@@ -57,7 +58,12 @@ class Logger:
     # -- dispatching ---------------------------------------------------------
 
     def emit(self, entry: LogEntry) -> None:
-        """Send a log entry to all sinks and (optionally) stdlib."""
+        """Send a log entry to all sinks and (optionally) stdlib.
+
+        Sensitive values in kwargs (password, api_key, token, etc.) are
+        automatically redacted before reaching any sink or the console.
+        """
+        entry = self._redact_entry(entry)
         for sink in self._sinks:
             sink.write(entry)
 
@@ -80,6 +86,17 @@ class Logger:
         if entry.duration_ms is not None:
             parts.append(f"[{entry.duration_ms:.2f}ms]")
         return " | ".join(parts)
+
+    # -- redaction -----------------------------------------------------------
+
+    @staticmethod
+    def _redact_entry(entry: LogEntry) -> LogEntry:
+        """Return a copy of the entry with sensitive values redacted."""
+        if entry.kwargs:
+            entry.kwargs = redact_kwargs(entry.kwargs)
+        if entry.extra:
+            entry.extra = redact_kwargs(entry.extra)
+        return entry
 
     # -- lifecycle -----------------------------------------------------------
 
