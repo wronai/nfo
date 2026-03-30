@@ -1,3 +1,25 @@
+## [Unreleased]
+
+## [0.2.19] - 2026-03-30
+
+### Docs
+- Update README.md
+- Update project/README.md
+- Update project/context.md
+
+### Other
+- Update .gitignore
+- Update demo/.gitignore
+- Update nfo/.gitignore
+- Update project.sh
+- Update project/analysis.toon.yaml
+- Update project/calls.mmd
+- Update project/calls.png
+- Update project/compact_flow.mmd
+- Update project/compact_flow.png
+- Update project/duplication.toon.yaml
+- ... and 7 more files
+
 ## [0.2.18] - 2026-03-02
 
 ### Summary

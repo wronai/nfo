@@ -1,0 +1,32 @@
+flowchart TD
+
+    %% Entry points (blue)
+    classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
+
+    subgraph CLI
+        nfo__click__NfoGroup__invoke["invoke"]
+        nfo__click__NfoGroup___resolve_logger["_resolve_logger"]
+        nfo__click__NfoCommand__invoke["invoke"]
+        nfo__click__nfo_options["nfo_options"]
+    end
+
+    subgraph Core
+        demo__load_generator__main["main"]
+        nfo__llm__LLMSink___build_user_prompt["_build_user_prompt"]
+        nfo__llm__LLMSink___analyze["_analyze"]
+        nfo__llm__LLMSink___process["_process"]
+        nfo__llm__LLMSink__write["write"]
+        nfo__llm__LLMSink__close["close"]
+        nfo__extractors__register_extractor["register_extractor"]
+        nfo__extractors__unregister_all_extractors["unregister_all_extractors"]
+        nfo__extractors__extract_meta{{extract_meta CC=17}}
+        nfo__webhook__WebhookSink___build_payload["_build_payload"]
+        nfo__webhook__WebhookSink___send["_send"]
+        nfo__webhook__WebhookSink__write["write"]
+        nfo__webhook__WebhookSink__close["close"]
+        nfo__buffered_sink__AsyncBufferedSink__write["write"]
+        nfo__buffered_sink__AsyncBufferedSink__flush["flush"]
+        ...["+117 more"]
+    end
+
+    class demo__load_generator__main,nfo__llm__LLMSink___build_user_prompt,nfo__llm__LLMSink___analyze,nfo__llm__LLMSink___process,nfo__llm__LLMSink__write,nfo__llm__LLMSink__close,nfo__extractors__register_extractor,nfo__extractors__unregister_all_extractors,nfo__webhook__WebhookSink___build_payload,nfo__webhook__WebhookSink___send entry

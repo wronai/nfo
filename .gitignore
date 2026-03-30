@@ -1,3 +1,5 @@
+demo/.env.example
+nfo/.env.example
 .idea
 playwright-report/
 test-results/
