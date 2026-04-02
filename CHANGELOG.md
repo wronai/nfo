@@ -1,5 +1,26 @@
 ## [Unreleased]
 
+## [0.2.21] - 2026-04-02
+
+### Added
+- New `nfo.metrics` module with Counter, Gauge, Histogram metrics collection
+- New `nfo.analytics` module for log analysis (trends, anomalies, aggregations)
+- New `nfo.context` module with context managers (log_context, temp_level, temp_sink, silence, span)
+- New `get_config()` function in `nfo.configure`
+- Auto-commit and push in pyqual pipeline after successful gates
+
+### Fixed
+- Fixed TODO items: return types in demo/app.py and examples
+- Fixed magic numbers replaced with constants in examples
+- Fixed duplicate imports in demo/load_generator.py
+- Fixed pytest-asyncio warnings with explicit fixture scope
+- Fixed vallm validation errors with --no-imports flag
+
+### Improved
+- Added get_default_logger to public API exports
+- Enhanced pyqual.yaml with deploy stage for automatic git push
+- All pyqual gates now passing (CC: 3.7, critical: 0, tests: 339)
+
 ## [0.2.20] - 2026-03-30
 
 ### Docs

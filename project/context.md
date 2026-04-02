@@ -80,14 +80,14 @@
 - **Classes**: 1
 - **File**: `llm.py`
 
+### nfo.context
+- **Functions**: 8
+- **File**: `context.py`
+
 ### nfo.models
 - **Functions**: 8
 - **Classes**: 1
 - **File**: `models.py`
-
-### nfo.context
-- **Functions**: 8
-- **File**: `context.py`
 
 ### nfo.logger
 - **Functions**: 7

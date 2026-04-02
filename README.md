@@ -84,6 +84,81 @@ def analyze(image_b64: str, context: str):
 Use `max_repr_length=None` to disable truncation for a specific decorator.
 The same option is available in `@catch`, `@logged`, `auto_log()`, and `auto_log_by_name()`.
 
+## New Modules (v0.2.21)
+
+### Metrics Collection (`nfo.metrics`)
+
+Lightweight metrics without external dependencies:
+
+```python
+from nfo.metrics import Counter, Gauge, Histogram
+
+# Counter with labels
+requests = Counter("http_requests", labels=["method", "status"])
+requests.inc(method="GET", status=200)
+
+# Gauge
+queue_size = Gauge("queue_size")
+queue_size.set(42)
+
+# Histogram with custom buckets
+latency = Histogram("request_latency", buckets=[0.1, 0.5, 1.0, 5.0])
+latency.observe(0.23)
+```
+
+### Log Analytics (`nfo.analytics`)
+
+Analyze SQLite logs for trends and anomalies:
+
+```python
+from nfo.analytics import create_analytics
+
+analytics = create_analytics("logs.db")
+
+# Error rate in last 24h
+stats = analytics.error_rate(window_hours=24)
+
+# Find slowest functions
+slow_funcs = analytics.slowest_functions(n=10, min_calls=5)
+
+# Detect anomalies (z-score > 3.0)
+anomalies = analytics.find_anomalies("process_order", threshold=3.0)
+
+# Hourly summary
+summary = analytics.hourly_summary(hours=24)
+```
+
+### Context Managers (`nfo.context`)
+
+Temporarily change logging behavior:
+
+```python
+from nfo.context import log_context, temp_level, temp_sink, silence, span
+
+# Add metadata context to all logs
+with log_context(user_id="123", request_id="abc"):
+    process_order()  # logs include user_id and request_id
+
+# Temporarily change log level
+with temp_level("DEBUG"):
+    debug_info = get_debug_data()
+
+# Temporarily add a sink
+with temp_sink("markdown:debug.md"):
+    generate_report()
+
+# Silence all logging
+with silence():
+    noisy_operation()
+
+# Create tracing span
+with span("process_order", order_id="123") as span_data:
+    process_order()
+    span_data["status"] = "success"
+```
+
+---
+
 ## Why nfo?
 
 ### 1. Zero boilerplate → full observability
