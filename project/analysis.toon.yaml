@@ -8,13 +8,13 @@ REFACTOR[0]: none needed
 PIPELINES[245]:
   [1] Src [main]: main → weighted_choice
       PURITY: 100% pure
-  [2] Src [delete_user]: delete_user
+  [2] Src [main]: main → setup_logger → set_default_logger
       PURITY: 100% pure
-  [3] Src [calculate_total]: calculate_total
+  [3] Src [setup_logger]: setup_logger → set_default_logger
       PURITY: 100% pure
-  [4] Src [main]: main → setup_logger → set_default_logger
+  [4] Src [fetch_user]: fetch_user
       PURITY: 100% pure
-  [5] Src [setup_logger]: setup_logger → set_default_logger
+  [5] Src [parse_config]: parse_config → catch → _get_default_logger
       PURITY: 100% pure
 
 LAYERS:
