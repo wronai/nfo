@@ -59,15 +59,15 @@ flowchart TD
     examples__env_tagger -->|1| examples__auto_log
     examples__env_tagger -->|1| examples__click_integration
     examples__configure -->|1| nfo__decorators
-    nfo__auto -->|1| nfo__decorators
     examples__env_config -->|1| nfo__decorators
+    nfo__auto -->|1| nfo__decorators
     nfo__webhook -->|1| nfo__metrics
     nfo -->|1| nfo__models
+    nfo__configure -->|1| nfo__models
+    nfo__configure -->|1| nfo__metrics
+    nfo__configure -->|1| nfo__decorators
     nfo__fastapi_middleware -->|1| nfo__metrics
     nfo__fastapi_middleware -->|1| nfo__models
     nfo__env -->|1| nfo__metrics
     nfo__logged -->|1| nfo__decorators
-    nfo__configure -->|1| nfo__models
-    nfo__configure -->|1| nfo__metrics
-    nfo__configure -->|1| nfo__decorators
     nfo____main__ -->|1| nfo__decorators

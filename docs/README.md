@@ -153,7 +153,7 @@ Content outside the markers is preserved when regenerating. Enable this with `sy
 
 ```
 nfo/
-├── project    ├── load_generator        ├── main        ├── main        ├── main        ├── main        ├── main        ├── main        ├── main        ├── main        ├── main        ├── server        ├── client        ├── nfo_pb2_grpc        ├── nfo_pb2        ├── main        ├── main    ├── app        ├── demo_basic        ├── demo_configure        ├── demo_formats        ├── main    ├── sync_pactown_com_dependency        ├── main    ├── llm        ├── main    ├── auto    ├── analytics    ├── extractors    ├── buffered_sink    ├── webhook    ├── redact├── nfo/    ├── ring_buffer_sink    ├── metrics    ├── setup    ├── configure    ├── fastapi_middleware    ├── meta    ├── binary_router    ├── context    ├── log_flow    ├── pipeline_sink    ├── terminal    ├── env    ├── models    ├── prometheus    ├── meta_decorators    ├── logged    ├── json_sink    ├── logger    ├── sinks        ├── _decision        ├── _core    ├── decorators/        ├── _extract        ├── _log_call        ├── _catch    ├── click        ├── main    ├── __main__```
+├── project        ├── main    ├── load_generator        ├── main        ├── main        ├── main        ├── main        ├── main        ├── main        ├── main        ├── main        ├── server        ├── client        ├── nfo_pb2_grpc        ├── nfo_pb2        ├── main        ├── main        ├── main        ├── demo_basic        ├── demo_configure        ├── demo_formats        ├── main    ├── sync_pactown_com_dependency    ├── app    ├── llm    ├── auto        ├── main    ├── analytics    ├── extractors    ├── webhook    ├── buffered_sink    ├── redact├── nfo/    ├── ring_buffer_sink    ├── metrics    ├── setup    ├── configure    ├── fastapi_middleware    ├── meta    ├── binary_router    ├── log_flow    ├── context    ├── pipeline_sink    ├── terminal    ├── env    ├── models    ├── meta_decorators    ├── prometheus    ├── logged    ├── json_sink    ├── logger    ├── sinks        ├── _decision        ├── _core    ├── decorators/        ├── _extract        ├── _log_call        ├── _catch    ├── click        ├── main    ├── __main__```
 
 ## API Overview
 
@@ -168,14 +168,14 @@ nfo/
 - **`NfoLoggerStub`** — --- Service ---
 - **`NfoLoggerServicer`** — --- Service ---
 - **`NfoLogger`** — --- Service ---
-- **`UserService`** — —
 - **`PaymentService`** — —
+- **`UserService`** — —
 - **`LLMSink`** — Sink that sends ERROR-level log entries to an LLM for root-cause analysis.
 - **`InventoryService`** — —
 - **`LogStats`** — Statistics for a single function/metric.
 - **`LogAnalytics`** — Analytics engine for nfo SQLite logs.
-- **`AsyncBufferedSink`** — Buffer log entries and write them batch-wise in a background thread.
 - **`WebhookSink`** — Sink that POSTs log entries to an HTTP webhook endpoint.
+- **`AsyncBufferedSink`** — Buffer log entries and write them batch-wise in a background thread.
 - **`RingBufferSink`** — In-memory ring buffer that flushes context to *delegate* on error.
 - **`MetricValue`** — Single metric value with timestamp.
 - **`Counter`** — Monotonically increasing counter metric.
@@ -206,15 +206,15 @@ nfo/
 
 ### Functions
 
+- `create_user(name, email)` — Create a new user.
+- `delete_user(user_id)` — Delete user by ID.
+- `calculate_total(prices)` — Sum a list of prices.
+- `health_check()` — Excluded from auto_log — called frequently, not interesting.
 - `weighted_choice(endpoints)` — —
 - `main()` — —
 - `setup_logger()` — —
 - `run_bash(script_path)` — Run a Bash script and capture its output through nfo logging.
 - `main()` — —
-- `create_user(name, email)` — Create a new user.
-- `delete_user(user_id)` — Delete user by ID.
-- `calculate_total(prices)` — Sum a list of prices.
-- `health_check()` — Excluded from auto_log — called frequently, not interesting.
 - `NewNfoClient()` — —
 - `Log()` — —
 - `LogCall()` — —
@@ -245,17 +245,8 @@ nfo/
 - `demo_env_tagger()` — EnvTagger wraps a sink to auto-tag every log entry.
 - `demo_dynamic_router()` — DynamicRouter sends logs to different sinks based on rules.
 - `demo_diff_tracker()` — DiffTracker detects when function output changes.
-- `compute_fibonacci(n)` — Compute fibonacci number (intentionally slow for large n).
-- `process_order(order_id, amount)` — Simulate order processing.
-- `risky_division(a, b)` — Division that may fail.
-- `slow_operation(duration)` — Simulate a slow operation.
-- `health()` — —
-- `demo_success()` — Run several successful decorated function calls.
-- `demo_error()` — Trigger error-level log entries.
-- `demo_slow()` — Trigger a slow operation to demonstrate duration histograms.
-- `demo_batch()` — Run a batch of mixed calls (success + errors) for load simulation.
-- `metrics()` — Expose Prometheus metrics (alternative to prom_sink auto-server).
-- `browse_logs(level, limit)` — Browse latest logs from SQLite.
+- `process_order(order_id, amount)` — —
+- `parse_config(raw)` — —
 - `cli()` — Demo CLI with automatic nfo logging.
 - `greet(name)` — Greet someone.
 - `process(count)` — Run a processing loop.
@@ -271,14 +262,23 @@ nfo/
 - `process_batch(items)` — Process items concurrently.
 - `risky_fetch(url)` — Fetch that may fail — returns {} on error instead of raising.
 - `main()` — —
-- `process_order(order_id, amount)` — —
-- `parse_config(raw)` — —
+- `compute_fibonacci(n)` — Compute fibonacci number (intentionally slow for large n).
+- `process_order(order_id, amount)` — Simulate order processing.
+- `risky_division(a, b)` — Division that may fail.
+- `slow_operation(duration)` — Simulate a slow operation.
+- `health()` — —
+- `demo_success()` — Run several successful decorated function calls.
+- `demo_error()` — Trigger error-level log entries.
+- `demo_slow()` — Trigger a slow operation to demonstrate duration histograms.
+- `demo_batch()` — Run a batch of mixed calls (success + errors) for load simulation.
+- `metrics()` — Expose Prometheus metrics (alternative to prom_sink auto-server).
+- `browse_logs(level, limit)` — Browse latest logs from SQLite.
 - `detect_prompt_injection(text)` — Scan text for common prompt injection patterns.
 - `scan_entry_for_injection(entry)` — Scan a LogEntry's args/kwargs for prompt injection attempts.
-- `create_order(order_id, amount)` — —
-- `parse_payload(raw)` — —
 - `auto_log()` — Automatically wrap all functions in one or more modules with logging.
 - `auto_log_by_name()` — Like auto_log() but accepts module name strings instead of module objects.
+- `create_order(order_id, amount)` — —
+- `parse_payload(raw)` — —
 - `create_analytics(db_path)` — Factory function to create LogAnalytics instance.
 - `detect_format(data)` — Detect file format from magic bytes.
 - `extract_image_meta(data)` — Extract metadata from an image without external dependencies.
@@ -306,6 +306,8 @@ nfo/
 - `configure()` — Configure nfo logging for the entire project.
 - `get_config()` — Return current configuration state.
 - `sizeof(obj)` — Best-effort size of *obj* in bytes.
+- `build_log_flow_graph(entries_or_grouped)` — Convenience wrapper for building a flow graph without manual parser setup.
+- `compress_logs_for_llm(entries_or_graph)` — Convenience wrapper for LLM-ready compression output.
 - `get_current_context()` — Get merged context from all active context managers.
 - `log_context()` — Temporarily add metadata context to all log entries.
 - `temp_level(level)` — Temporarily change the log level for the current logger.
@@ -314,8 +316,6 @@ nfo/
 - `temp_config()` — Temporarily reconfigure nfo with new settings.
 - `span(name)` — Create a tracing span for a block of code.
 - `with_context()` — Decorator to add context to a function.
-- `build_log_flow_graph(entries_or_grouped)` — Convenience wrapper for building a flow graph without manual parser setup.
-- `compress_logs_for_llm(entries_or_graph)` — Convenience wrapper for LLM-ready compression output.
 - `generate_trace_id()` — Generate a new trace ID.
 - `safe_repr(value, max_length)` — Best-effort repr with defensive truncation.
 - `meta_log(func)` — Decorator that logs metadata instead of raw binary data.

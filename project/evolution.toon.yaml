@@ -1,4 +1,4 @@
-# code2llm/evolution | 286 func | 35f | 2026-04-02
+# code2llm/evolution | 286 func | 35f | 2026-04-09
 
 NEXT[2] (ranked by impact):
   [1] !! SPLIT           nfo/__main__.py
@@ -46,4 +46,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=3.9 → now CC̄=3.7
+  prev CC̄=3.7 → now CC̄=3.7

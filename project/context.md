@@ -66,14 +66,14 @@
 - **Classes**: 3
 - **File**: `nfo_pb2_grpc.py`
 
+### nfo
+- **Functions**: 9
+- **File**: `__init__.py`
+
 ### nfo.analytics
 - **Functions**: 9
 - **Classes**: 2
 - **File**: `analytics.py`
-
-### nfo
-- **Functions**: 9
-- **File**: `__init__.py`
 
 ### nfo.llm
 - **Functions**: 8
@@ -451,22 +451,22 @@ Key functions that process and transform data:
 ### examples.multi-sink.main.parse_int
 - **Output to**: nfo.decorators._catch.catch, int
 
-### examples.configure.main.process_order
-
-### examples.configure.main.parse_config
-- **Output to**: nfo.decorators._catch.catch, json.loads
+### demo.app.process_order
+> Simulate order processing.
+- **Output to**: nfo.decorators._log_call.log_call, time.sleep, random.uniform
 
 ### examples.click-integration.demo_basic.process
 > Run a processing loop.
 - **Output to**: cli.command, click.option, range, click.echo, click.echo
 
-### demo.app.process_order
-> Simulate order processing.
-- **Output to**: nfo.decorators._log_call.log_call, time.sleep, random.uniform
-
 ### examples.async-usage.main.process_batch
 > Process items concurrently.
 - **Output to**: nfo.decorators._log_call.log_call, len, asyncio.sleep, len
+
+### examples.configure.main.process_order
+
+### examples.configure.main.parse_config
+- **Output to**: nfo.decorators._catch.catch, json.loads
 
 ### nfo.llm.LLMSink._process
 > Analyze entry and enrich it.

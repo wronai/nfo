@@ -1,8 +1,8 @@
-# nfo | 39f 7181L | shell:1,python:38 | 2026-04-02
+# nfo | 39f 7185L | shell:1,python:38 | 2026-04-09
 # stats: 286 func | 0 cls | 39 mod | CC̄=3.7 | critical:0 | cycles:0
 # alerts[5]: fan-out _run_inline_server=32; fan-out meta_log=22; fan-out NfoCommand.invoke=18; fan-out catch=18; fan-out log_call=18
-# hotspots[5]: _run_inline_server fan=32; meta_log fan=22; log_call fan=18; catch fan=18; NfoCommand.invoke fan=18
-# evolution: CC̄ 3.9→3.7 (improved -0.2)
+# hotspots[5]: _run_inline_server fan=32; meta_log fan=22; log_call fan=18; NfoCommand.invoke fan=18; catch fan=18
+# evolution: CC̄ 3.7→3.7 (flat 0.0)
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
 M[39]:
   demo/app.py,257
@@ -18,7 +18,7 @@ M[39]:
   nfo/context.py,268
   nfo/decorators/__init__.py,45
   nfo/decorators/_catch.py,162
-  nfo/decorators/_core.py,62
+  nfo/decorators/_core.py,66
   nfo/decorators/_decision.py,164
   nfo/decorators/_extract.py,99
   nfo/decorators/_log_call.py,179
@@ -45,12 +45,6 @@ M[39]:
   project.sh,36
   tools/sync_pactown_com_dependency.py,9
 D:
-  nfo/pipeline_sink.py:
-    e: PipelineSink
-    PipelineSink(Sink): __init__(6),write(1),close(0),_flush_stale(0),_flush_run(1),_c(2),_render_block(2),_render_step(2),_step_summary(1),_format_metric(2),_render_sub_lines(2),_render_footer(3),_render_data_flow(2),_render_cost_line(1),_visible_len(0),_ansi_pad(1)  # Sink that groups log entries by ``pipeline_run_id`` and rend...
-  nfo/terminal.py:
-    e: TerminalSink
-    TerminalSink(Sink): __init__(8),write(1),_write_ascii(1),_write_color(1),_write_markdown(1),_format_args_str(1),_format_result(1),_format_meta_str(1),_format_duration(1),_write_toon(1),_write_table(1),close(0)  # Sink that displays log entries in the terminal with configur...
   nfo/configure.py:
     e: _StdlibBridge,get_global_meta_policy,get_global_auto_extract_meta,_parse_sink_spec,_read_env_config,_resolve_sinks,_wrap_sinks_with_llm,_wrap_sinks_with_env,_setup_stdlib_bridge,configure,get_config
     _StdlibBridge(logging.Handler): __init__(1),emit(1)  # Bridge that intercepts stdlib logging records and forwards t...
@@ -64,6 +58,12 @@ D:
     _setup_stdlib_bridge(logger;level;resolved_sinks;bridge_stdlib;modules)
     configure()
     get_config()
+  nfo/pipeline_sink.py:
+    e: PipelineSink
+    PipelineSink(Sink): __init__(6),write(1),close(0),_flush_stale(0),_flush_run(1),_c(2),_render_block(2),_render_step(2),_step_summary(1),_format_metric(2),_render_sub_lines(2),_render_footer(3),_render_data_flow(2),_render_cost_line(1),_visible_len(0),_ansi_pad(1)  # Sink that groups log entries by ``pipeline_run_id`` and rend...
+  nfo/terminal.py:
+    e: TerminalSink
+    TerminalSink(Sink): __init__(8),write(1),_write_ascii(1),_write_color(1),_write_markdown(1),_format_args_str(1),_format_result(1),_format_meta_str(1),_format_duration(1),_write_toon(1),_write_table(1),close(0)  # Sink that displays log entries in the terminal with configur...
   nfo/__main__.py:
     e: _setup_logger,_build_log_entry,_emit_command_result,_emit_command_not_found,cmd_run,_build_logs_query,_format_log_row,cmd_logs,cmd_version,cmd_serve,_run_inline_server,_detect_language,_parse_duration,main
     _setup_logger(sink_specs;env)
@@ -181,14 +181,14 @@ Observa...
     _extract_return_meta(value;policy)
     _emit(entry;logger)
     meta_log(func)
+  nfo/json_sink.py:
+    e: JSONSink
+    JSONSink(Sink): __init__(1),write(1),close(0)  # Append log entries as JSON Lines (one JSON object per line)...
   nfo/prometheus.py:
     e: PrometheusSink
     PrometheusSink(Sink): __init__(1),_start_server(1),write(1),close(0),get_metrics(0)  # Sink that exports nfo log entries as Prometheus metrics.
 
 Me...
-  nfo/json_sink.py:
-    e: JSONSink
-    JSONSink(Sink): __init__(1),write(1),close(0)  # Append log entries as JSON Lines (one JSON object per line)...
   nfo/sinks.py:
     e: Sink,SQLiteSink,CSVSink,MarkdownSink
     Sink(ABC): write(1),close(0)  # Base class for all sinks...

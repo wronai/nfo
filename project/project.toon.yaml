@@ -1,4 +1,4 @@
-# nfo | 286 func | 35f | 12043L | python | 2026-04-02
+# nfo | 286 func | 35f | 12047L | python | 2026-04-09
 
 HEALTH:
   CC̄=3.7  critical=20 (limit:10)  dup=0  cycles=0
@@ -7,8 +7,8 @@ ALERTS[18]:
   !!! high_fan_out     _run_inline_server = 32 (limit:10)
   !!! high_fan_out     meta_log = 22 (limit:10)
   !!  high_fan_out     log_call = 18 (limit:10)
-  !!  high_fan_out     catch = 18 (limit:10)
   !!  high_fan_out     NfoCommand.invoke = 18 (limit:10)
+  !!  high_fan_out     catch = 18 (limit:10)
   !!  high_fan_out     decision_log = 17 (limit:10)
   !!  high_fan_out     main = 15 (limit:10)
   !   high_fan_out     PipelineSink._render_block = 13 (limit:10)
@@ -41,10 +41,10 @@ Unlike ``@log_call``,
   ★ log_call fan=18  // Decorator that automatically logs function calls.
 
 Can be used bare (``@log_call
+  ★ NfoCommand.invoke fan=18  // Orchestrates 18 calls
   ★ catch fan=18  // Decorator that logs calls **and** suppresses exceptions.
 
 On exception the decor
-  ★ NfoCommand.invoke fan=18  // Orchestrates 18 calls
 
 REFACTOR[5]:
   [1] H/H Split god module nfo/__main__.py (533L, 0 classes)
@@ -54,4 +54,4 @@ REFACTOR[5]:
   [5] M/M Reduce log_call fan-out (currently 18)
 
 EVOLUTION:
-  2026-04-02 CC̄=3.7 crit=20 12043L // Automated analysis
+  2026-04-09 CC̄=3.7 crit=20 12047L // Automated analysis
