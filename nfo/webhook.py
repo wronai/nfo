@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import threading
-import urllib.request
+from urllib.request import Request, urlopen
 import urllib.error
 from typing import Any, Dict, List, Optional, Sequence
 
@@ -110,13 +110,13 @@ class WebhookSink(Sink):
         """Send payload via HTTP POST (fire-and-forget, no crash on failure)."""
         try:
             data = json.dumps(payload).encode("utf-8")
-            req = urllib.request.Request(
+            req = Request(
                 self.url,
                 data=data,
                 headers={"Content-Type": "application/json", **self.headers},
                 method="POST",
             )
-            urllib.request.urlopen(req, timeout=self.timeout)
+            urlopen(req, timeout=self.timeout)
         except Exception:
             pass  # fire-and-forget: don't crash on webhook failure
 

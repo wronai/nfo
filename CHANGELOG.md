@@ -1,5 +1,13 @@
 ## [Unreleased]
 
+## [0.2.22] - 2026-04-09
+
+### Test
+- Update tests/test_webhook.py
+
+### Other
+- Update nfo/webhook.py
+
 ## [0.2.21] - 2026-04-09
 
 ### Docs

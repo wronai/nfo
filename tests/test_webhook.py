@@ -37,7 +37,7 @@ class TestWebhookSink:
     def test_only_sends_configured_levels(self):
         """Should not send for DEBUG when levels=["ERROR"]."""
         sink = WebhookSink(url="http://localhost:9999", levels=["ERROR"])
-        with patch("nfo.webhook.urllib.request.urlopen") as mock_open:
+        with patch("nfo.webhook.urlopen") as mock_open:
             sink.write(_make_entry(level="DEBUG"))
             # Give thread time to run (if it was started)
             import time; time.sleep(0.1)
@@ -46,7 +46,7 @@ class TestWebhookSink:
     def test_sends_for_error_level(self):
         """Should send for ERROR level."""
         sink = WebhookSink(url="http://localhost:9999")
-        with patch("nfo.webhook.urllib.request.urlopen") as mock_open:
+        with patch("nfo.webhook.urlopen") as mock_open:
             sink.write(_make_entry(level="ERROR"))
             import time; time.sleep(0.2)
             mock_open.assert_called_once()
@@ -109,7 +109,7 @@ class TestWebhookSink:
 
     def test_custom_levels(self):
         sink = WebhookSink(url="http://localhost:9999", levels=["WARNING", "ERROR"])
-        with patch("nfo.webhook.urllib.request.urlopen") as mock_open:
+        with patch("nfo.webhook.urlopen") as mock_open:
             sink.write(_make_entry(level="WARNING"))
             import time; time.sleep(0.2)
             mock_open.assert_called_once()

@@ -128,7 +128,7 @@ def __getattr__(name: str):
         return FastAPIMiddleware
     raise AttributeError(f"module 'nfo' has no attribute {name!r}")
 
-__version__ = "0.2.21"
+__version__ = "0.2.22"
 
 __all__ = [
     "log_call",
